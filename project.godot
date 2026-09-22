@@ -11,13 +11,23 @@ config_version=5
 [application]
 
 config/name="RADAR"
+run/main_scene="res://node_3d.tscn"
 config/features=PackedStringArray("4.7", "Mobile")
 config/icon="res://icon.svg"
+
+[autoload]
+
+XRToolsUserSettings="*uid://bqgb8i74tm0t"
+XRToolsRumbleManager="*uid://by853dk86g1qw"
 
 [display]
 
 window/stretch/mode="canvas_items"
 window/stretch/aspect="expand"
+
+[editor_plugins]
+
+enabled=PackedStringArray("res://addons/godot-xr-tools/plugin.cfg")
 
 [physics]
 
@@ -27,8 +37,82 @@ window/stretch/aspect="expand"
 
 rendering_device/driver.windows="d3d12"
 renderer/rendering_method="mobile"
+renderer/rendering_method.mobile="gl_compatibility"
 textures/vram_compression/import_etc2_astc=true
+
+[shader_globals]
+
+META_ENVIRONMENT_DEPTH_AVAILABLE={
+"type": "bool",
+"value": false
+}
+META_ENVIRONMENT_DEPTH_TEXTURE={
+"type": "sampler2DArray",
+"value": ""
+}
+META_ENVIRONMENT_DEPTH_TEXEL_SIZE={
+"type": "vec2",
+"value": Vector2(0, 0)
+}
+META_ENVIRONMENT_DEPTH_PROJECTION_VIEW_LEFT={
+"type": "mat4",
+"value": Projection(1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1)
+}
+META_ENVIRONMENT_DEPTH_PROJECTION_VIEW_RIGHT={
+"type": "mat4",
+"value": Projection(1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1)
+}
+META_ENVIRONMENT_DEPTH_INV_PROJECTION_VIEW_LEFT={
+"type": "mat4",
+"value": Projection(1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1)
+}
+META_ENVIRONMENT_DEPTH_INV_PROJECTION_VIEW_RIGHT={
+"type": "mat4",
+"value": Projection(1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1)
+}
+META_ENVIRONMENT_DEPTH_FROM_CAMERA_PROJECTION_LEFT={
+"type": "mat4",
+"value": Projection(1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1)
+}
+META_ENVIRONMENT_DEPTH_FROM_CAMERA_PROJECTION_RIGHT={
+"type": "mat4",
+"value": Projection(1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1)
+}
+META_ENVIRONMENT_DEPTH_TO_CAMERA_PROJECTION_LEFT={
+"type": "mat4",
+"value": Projection(1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1)
+}
+META_ENVIRONMENT_DEPTH_TO_CAMERA_PROJECTION_RIGHT={
+"type": "mat4",
+"value": Projection(1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1)
+}
 
 [xr]
 
 openxr/enabled=true
+openxr/extensions/spatial_entity/enabled=true
+openxr/extensions/spatial_entity/enable_spatial_anchors=true
+openxr/extensions/spatial_entity/enable_persistent_anchors=true
+openxr/extensions/spatial_entity/enable_builtin_anchor_detection=true
+openxr/extensions/spatial_entity/enable_plane_tracking=true
+openxr/extensions/spatial_entity/enable_builtin_plane_detection=true
+openxr/extensions/spatial_entity/enable_marker_tracking=true
+openxr/extensions/spatial_entity/enable_builtin_marker_tracking=true
+shaders/enabled=true
+openxr/extensions/meta/passthrough=true
+openxr/extensions/meta/face_tracking=true
+openxr/extensions/meta/body_tracking=true
+openxr/extensions/meta/hand_tracking_aim=true
+openxr/extensions/meta/hand_tracking_mesh=true
+openxr/extensions/meta/hand_tracking_capsules=true
+openxr/extensions/meta/simultaneous_hands_and_controllers=true
+openxr/extensions/meta/render_model=true
+openxr/extensions/meta/anchor_api=true
+openxr/extensions/meta/anchor_sharing=true
+openxr/extensions/meta/scene_api=true
+openxr/extensions/meta/headset_id=true
+openxr/extensions/meta/colocation_discovery=true
+openxr/extensions/meta/application_space_warp=true
+openxr/extensions/meta/environment_depth=true
+openxr/extensions/androidxr/light_estimation=true
+openxr/extensions/androidxr/passthrough_camera_state=true
