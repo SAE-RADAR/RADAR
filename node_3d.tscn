@@ -1,12 +1,12 @@
-[gd_scene load_steps=2 format=3 uid="uid://xde675drqh7t"]
+[gd_scene format=3 uid="uid://xde675drqh7t"]
 
 [ext_resource type="PackedScene" uid="uid://clc5dre31iskm" path="res://addons/godot-xr-tools/xr/start_xr.tscn" id="1_startxr"]
 
 [node name="Node3D" type="Node3D" unique_id=1019243378]
 
-[node name="StartXR" parent="." instance=ExtResource("1_startxr")]
+[node name="StartXR" parent="." unique_id=1248289784 instance=ExtResource("1_startxr")]
 enable_passthrough = true
 
-[node name="XROrigin3D" type="XROrigin3D" parent="."]
+[node name="XROrigin3D" type="XROrigin3D" parent="." unique_id=926108571]
 
-[node name="XRCamera3D" type="XRCamera3D" parent="XROrigin3D"]
+[node name="XRCamera3D" type="XRCamera3D" parent="XROrigin3D" unique_id=1247241030]
