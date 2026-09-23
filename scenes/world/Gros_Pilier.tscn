@@ -10,6 +10,8 @@
 [ext_resource type="PackedScene" uid="uid://b6bk2pj8vbj28" path="res://addons/godot-xr-tools/functions/movement_turn.tscn" id="8_turn"]
 [ext_resource type="Script" uid="uid://blp0diub88deu" path="res://scenes/effects/teleport_ripple.gd" id="9_ripple"]
 [ext_resource type="Shader" uid="uid://cwhl4266d7xg8" path="res://scenes/world/aurora_sky.gdshader" id="10_aurora"]
+[ext_resource type="Script" uid="uid://mefmk615ficv" path="res://scenes/world/hand_dissolve.gd" id="11_dissolve"]
+[ext_resource type="Script" uid="uid://dki1ixhua0856" path="res://scenes/world/player_spawn.gd" id="12_spawn"]
 
 [sub_resource type="ShaderMaterial" id="ShaderMaterial_aurora"]
 shader = ExtResource("10_aurora")
@@ -55,7 +57,7 @@ script = ExtResource("2_scan")
 [node name="StartXR" parent="." unique_id=2132929652 instance=ExtResource("3_startxr")]
 
 [node name="XROrigin3D" type="XROrigin3D" parent="." unique_id=1964309610]
-transform = Transform3D(-0.8, 0, 0.6, 0, 1, 0, -0.6, 0, -0.8, 1.5, 0, -2)
+transform = Transform3D(-0.8, 0, 0.6, 0, 1, 0, -0.6, 0, -0.8, 1.5, 0.1, -2)
 
 [node name="XRCamera3D" type="XRCamera3D" parent="XROrigin3D" unique_id=1936629767]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1.7, 0)
@@ -82,3 +84,16 @@ transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.02, -0.05, 0)
 [node name="TeleportRipple" type="Node" parent="." unique_id=28127639 node_paths=PackedStringArray("player_body")]
 script = ExtResource("9_ripple")
 player_body = NodePath("../XROrigin3D/PlayerBody")
+
+[node name="HandDissolve" type="Node" parent="." unique_id=1814720129 node_paths=PackedStringArray("scan", "camera", "left_hand", "right_hand")]
+script = ExtResource("11_dissolve")
+scan = NodePath("../gros_pilier_quickscan")
+camera = NodePath("../XROrigin3D/XRCamera3D")
+left_hand = NodePath("../XROrigin3D/LeftController")
+right_hand = NodePath("../XROrigin3D/RightController")
+
+[node name="PlayerSpawn" type="Node" parent="." unique_id=1111593489 node_paths=PackedStringArray("player_body", "spawn", "start_xr")]
+script = ExtResource("12_spawn")
+player_body = NodePath("../XROrigin3D/PlayerBody")
+spawn = NodePath("../XROrigin3D")
+start_xr = NodePath("../StartXR")
