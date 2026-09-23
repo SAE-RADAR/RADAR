@@ -91,6 +91,8 @@ scan = NodePath("../gros_pilier_quickscan")
 camera = NodePath("../XROrigin3D/XRCamera3D")
 left_hand = NodePath("../XROrigin3D/LeftController")
 right_hand = NodePath("../XROrigin3D/RightController")
+spread_speed = 0.5
+max_radius = 0.5
 
 [node name="PlayerSpawn" type="Node" parent="." unique_id=1111593489 node_paths=PackedStringArray("player_body", "spawn", "start_xr")]
 script = ExtResource("12_spawn")
