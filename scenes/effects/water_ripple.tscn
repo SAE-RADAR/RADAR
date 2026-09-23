@@ -1,0 +1,17 @@
+[gd_scene format=3]
+
+[ext_resource type="Shader" path="res://scenes/effects/water_ripple.gdshader" id="1_shader"]
+[ext_resource type="Script" path="res://scenes/effects/water_ripple.gd" id="2_script"]
+
+[sub_resource type="ShaderMaterial" id="ShaderMaterial_ripple"]
+render_priority = 1
+shader = ExtResource("1_shader")
+
+[sub_resource type="PlaneMesh" id="PlaneMesh_ripple"]
+material = SubResource("ShaderMaterial_ripple")
+size = Vector2(4, 4)
+
+[node name="WaterRipple" type="MeshInstance3D"]
+cast_shadow = 0
+mesh = SubResource("PlaneMesh_ripple")
+script = ExtResource("2_script")

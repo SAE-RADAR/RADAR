@@ -1,6 +1,16 @@
 [gd_scene format=3 uid="uid://xde675drqh7t"]
 
 [ext_resource type="PackedScene" uid="uid://clc5dre31iskm" path="res://addons/godot-xr-tools/xr/start_xr.tscn" id="1_startxr"]
+[ext_resource type="Texture2D" uid="uid://duj0yftqdxfcj" path="res://dev/dev.png" id="2_dev"]
+[ext_resource type="Script" uid="uid://b3ljjosfudi5y" path="res://rotating_cube.gd" id="3_spin"]
+
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_dev"]
+shading_mode = 0
+albedo_texture = ExtResource("2_dev")
+
+[sub_resource type="BoxMesh" id="BoxMesh_dev"]
+material = SubResource("StandardMaterial3D_dev")
+size = Vector3(0.3, 0.3, 0.3)
 
 [node name="Node3D" type="Node3D" unique_id=1019243378]
 
@@ -10,3 +20,8 @@ enable_passthrough = true
 [node name="XROrigin3D" type="XROrigin3D" parent="." unique_id=926108571]
 
 [node name="XRCamera3D" type="XRCamera3D" parent="XROrigin3D" unique_id=1247241030]
+
+[node name="Cube" type="MeshInstance3D" parent="." unique_id=162837622]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1.4, -1.5)
+mesh = SubResource("BoxMesh_dev")
+script = ExtResource("3_spin")
