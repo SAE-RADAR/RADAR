@@ -1,6 +1,9 @@
 [gd_scene format=3 uid="uid://xde675drqh7t"]
 
 [ext_resource type="PackedScene" uid="uid://clc5dre31iskm" path="res://addons/godot-xr-tools/xr/start_xr.tscn" id="1_startxr"]
+<<<<<<< HEAD
+[ext_resource type="PackedScene" uid="uid://dqvpqa7g11b1v" path="res://assets/thermes/models/Thermes vestiges.fbx" id="2_noarx"]
+=======
 [ext_resource type="Texture2D" uid="uid://duj0yftqdxfcj" path="res://dev/dev.png" id="2_dev"]
 [ext_resource type="Script" uid="uid://b3ljjosfudi5y" path="res://rotating_cube.gd" id="3_spin"]
 
@@ -11,17 +14,30 @@ albedo_texture = ExtResource("2_dev")
 [sub_resource type="BoxMesh" id="BoxMesh_dev"]
 material = SubResource("StandardMaterial3D_dev")
 size = Vector3(0.3, 0.3, 0.3)
+>>>>>>> origin/dev
 
-[node name="Node3D" type="Node3D" unique_id=1019243378]
+[node name="Thermes" type="Node3D" unique_id=1019243378]
 
 [node name="StartXR" parent="." unique_id=1248289784 instance=ExtResource("1_startxr")]
 enable_passthrough = true
 
-[node name="XROrigin3D" type="XROrigin3D" parent="." unique_id=926108571]
+[node name="Thermes vestiges" parent="." unique_id=1832633782 instance=ExtResource("2_noarx")]
 
+<<<<<<< HEAD
+[node name="XROrigin3D2" type="XROrigin3D" parent="." unique_id=1297070371]
+
+[node name="XRCamera3D" type="XRCamera3D" parent="XROrigin3D2" unique_id=650736371]
+
+[node name="LeftController" type="XRController3D" parent="XROrigin3D2" unique_id=437635675]
+tracker = &"left_hand"
+
+[node name="RightController" type="XRController3D" parent="XROrigin3D2" unique_id=1292033148]
+tracker = &"right_hand"
+=======
 [node name="XRCamera3D" type="XRCamera3D" parent="XROrigin3D" unique_id=1247241030]
 
 [node name="Cube" type="MeshInstance3D" parent="." unique_id=162837622]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1.4, -1.5)
 mesh = SubResource("BoxMesh_dev")
 script = ExtResource("3_spin")
+>>>>>>> origin/dev
