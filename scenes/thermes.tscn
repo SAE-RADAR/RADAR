@@ -1,0 +1,7 @@
+[gd_scene format=3 uid="uid://lvkyswv2xgox"]
+
+[ext_resource type="PackedScene" uid="uid://dqvpqa7g11b1v" path="res://assets/thermes/models/Thermes vestiges.fbx" id="1_dxh5j"]
+
+[node name="Thermes" type="Node3D" unique_id=973039007]
+
+[node name="Thermes vestiges" parent="." unique_id=1749650180 instance=ExtResource("1_dxh5j")]
