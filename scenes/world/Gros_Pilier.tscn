@@ -8,13 +8,41 @@
 [ext_resource type="PackedScene" uid="uid://l2n30mpbkdyw" path="res://addons/godot-xr-tools/hands/scenes/lowpoly/right_hand_low.tscn" id="6_rhand"]
 [ext_resource type="PackedScene" uid="uid://fiul51tsyoop" path="res://addons/godot-xr-tools/functions/function_teleport.tscn" id="7_teleport"]
 [ext_resource type="PackedScene" uid="uid://b6bk2pj8vbj28" path="res://addons/godot-xr-tools/functions/movement_turn.tscn" id="8_turn"]
-[ext_resource type="Script" path="res://scenes/effects/teleport_ripple.gd" id="9_ripple"]
+[ext_resource type="Script" uid="uid://blp0diub88deu" path="res://scenes/effects/teleport_ripple.gd" id="9_ripple"]
+[ext_resource type="Shader" uid="uid://cwhl4266d7xg8" path="res://scenes/world/aurora_sky.gdshader" id="10_aurora"]
+
+[sub_resource type="ShaderMaterial" id="ShaderMaterial_aurora"]
+shader = ExtResource("10_aurora")
+shader_parameter/zenith_color = Color(0.004, 0.007, 0.022, 1)
+shader_parameter/horizon_color = Color(0.018, 0.03, 0.06, 1)
+shader_parameter/ground_color = Color(0.004, 0.005, 0.008, 1)
+shader_parameter/color_bottom = Color(0.6, 0.25, 0.9, 1)
+shader_parameter/color_main = Color(0.12, 1, 0.42, 1)
+shader_parameter/color_top = Color(0.75, 0.1, 0.35, 1)
+shader_parameter/brightness = 1.3
+shader_parameter/speed = 0.06
+shader_parameter/scale = 2.2
+shader_parameter/altitude = 1.0
+shader_parameter/thickness = 1.0
+shader_parameter/sharpness = 12.0
+shader_parameter/coverage = 0.5
+shader_parameter/band_position = 0.25
+shader_parameter/star_density = 0.22
+shader_parameter/star_brightness = 2.0
+shader_parameter/star_twinkle = 0.5
+shader_parameter/star_scale = 160.0
+
+[sub_resource type="Sky" id="Sky_aurora"]
+sky_material = SubResource("ShaderMaterial_aurora")
+radiance_size = 0
 
 [sub_resource type="Environment" id="Environment_scan"]
-background_mode = 1
+background_mode = 2
 background_color = Color(0.55, 0.65, 0.75, 1)
+sky = SubResource("Sky_aurora")
 ambient_light_source = 2
 ambient_light_color = Color(1, 1, 1, 1)
+reflected_light_source = 1
 
 [node name="GrosPilier" type="Node3D" unique_id=1873002229]
 
@@ -51,6 +79,6 @@ transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.02, -0.05, 0)
 
 [node name="PlayerBody" parent="XROrigin3D" unique_id=1658016560 instance=ExtResource("4_body")]
 
-[node name="TeleportRipple" type="Node" parent="." node_paths=PackedStringArray("player_body")]
+[node name="TeleportRipple" type="Node" parent="." unique_id=28127639 node_paths=PackedStringArray("player_body")]
 script = ExtResource("9_ripple")
 player_body = NodePath("../XROrigin3D/PlayerBody")
