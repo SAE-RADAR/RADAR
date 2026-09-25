@@ -14,6 +14,8 @@
 [ext_resource type="Script" uid="uid://dki1ixhua0856" path="res://scenes/world/player_spawn.gd" id="11_wwynm"]
 [ext_resource type="AudioStream" uid="uid://djokqtwl304j" path="res://assets/thermes/audio/water.wav" id="13_2ien5"]
 [ext_resource type="Script" uid="uid://bcnjelb2ydah4" path="res://scripts/sound_zone.gd" id="13_wq47j"]
+[ext_resource type="Script" uid="uid://b7fa55ni46hil" path="res://scenes/info_point_bassin.gd" id="15_1c0qi"]
+[ext_resource type="Texture2D" uid="uid://c802kfisu2ky1" path="res://assets/thermes/texture/Information.webp" id="16_aeurs"]
 
 [sub_resource type="ShaderMaterial" id="ShaderMaterial_6yhrf"]
 shader = ExtResource("4_4ud56")
@@ -51,6 +53,18 @@ reflected_light_source = 1
 [sub_resource type="SphereShape3D" id="SphereShape3D_yk851"]
 radius = 3.0
 
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_aeurs"]
+transparency = 1
+albedo_color = Color(0.02745098, 0.39215687, 0.5686275, 0.47058824)
+billboard_mode = 2
+
+[sub_resource type="QuadMesh" id="QuadMesh_ppuvh"]
+material = SubResource("StandardMaterial3D_aeurs")
+size = Vector2(3, 1.5)
+
+[sub_resource type="SphereShape3D" id="SphereShape3D_ppuvh"]
+radius = 2.0
+
 [node name="Thermes" type="Node3D" unique_id=973039007]
 
 [node name="Thermes vestiges" parent="." unique_id=1749650180 instance=ExtResource("1_dxh5j")]
@@ -68,6 +82,14 @@ transform = Transform3D(-0.8, 0, 0.6, 0, 1, 0, -0.6, 0, -0.8, -3.076, 0.74243176
 
 [node name="XRCamera3D" type="XRCamera3D" parent="XROrigin3D" unique_id=1760349337]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1.7, 0)
+
+[node name="GazeRay" type="RayCast3D" parent="XROrigin3D/XRCamera3D" unique_id=1069463939]
+target_position = Vector3(0, 0, -5)
+collision_mask = 2
+collide_with_areas = true
+collide_with_bodies = false
+debug_shape_custom_color = Color(0.7569271, 0.60670614, 1, 1)
+debug_shape_thickness = 5
 
 [node name="LeftController" type="XRController3D" parent="XROrigin3D" unique_id=71102444]
 tracker = &"left_hand"
@@ -88,9 +110,8 @@ transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.02, -0.05, 0)
 
 [node name="PlayerBody" parent="XROrigin3D" unique_id=319631433 instance=ExtResource("8_s7vb3")]
 
-[node name="TeleportRipple" type="Node" parent="." unique_id=93470574 node_paths=PackedStringArray("player_body")]
+[node name="TeleportRipple" type="Node" parent="." unique_id=93470574]
 script = ExtResource("9_1c0qi")
-player_body = NodePath("")
 
 [node name="HandDissolve" type="Node" parent="." unique_id=90942457 node_paths=PackedStringArray("scan", "camera", "left_hand", "right_hand")]
 script = ExtResource("10_aeurs")
@@ -112,10 +133,44 @@ transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 2.593621, 1.6023076, 1.593220
 script = ExtResource("13_wq47j")
 
 [node name="CollisionShape3D" type="CollisionShape3D" parent="SoundZone_Water" unique_id=1581492082]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.0020079613, 0, -0.002414465)
 shape = SubResource("SphereShape3D_yk851")
 
 [node name="WaterSound" type="AudioStreamPlayer3D" parent="SoundZone_Water" unique_id=1295295126]
 stream = ExtResource("13_2ien5")
+
+[node name="InfoPoint_Bassin" type="Node3D" parent="." unique_id=666185837]
+transform = Transform3D(0.5, 0, 0, 0, 0.5, 0, 0, 0, 0.5, 0, 2.4714618, 0)
+script = ExtResource("15_1c0qi")
+
+[node name="Icon" type="Sprite3D" parent="InfoPoint_Bassin" unique_id=1335149224]
+transform = Transform3D(0.15, 0, 0, 0, 0.15, 0, 0, 0, 0.15, 0, 0, 0)
+layers = 2
+billboard = 1
+texture = ExtResource("16_aeurs")
+
+[node name="InfoPanel" type="Node3D" parent="InfoPoint_Bassin" unique_id=1548116759]
+transform = Transform3D(0.01, 0, 0, 0, 0.01, 0, 0, 0, 0.01, 0, 0.5, 0)
+
+[node name="Label" type="Label3D" parent="InfoPoint_Bassin/InfoPanel" unique_id=2005371785]
+layers = 2
+billboard = 1
+text = "Les Thermes
+
+Ce bassin faisait partie
+de l'ancien complexe thermal."
+
+[node name="Background" type="MeshInstance3D" parent="InfoPoint_Bassin/InfoPanel" unique_id=1444725289]
+layers = 2
+mesh = SubResource("QuadMesh_ppuvh")
+surface_material_override/0 = SubResource("StandardMaterial3D_aeurs")
+
+[node name="Area3D" type="Area3D" parent="InfoPoint_Bassin" unique_id=2032037943]
+collision_layer = 2
+collision_mask = 2
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="InfoPoint_Bassin/Area3D" unique_id=1266015362]
+shape = SubResource("SphereShape3D_ppuvh")
 
 [connection signal="body_entered" from="SoundZone_Water" to="SoundZone_Water" method="_on_body_entered"]
 [connection signal="body_exited" from="SoundZone_Water" to="SoundZone_Water" method="_on_body_exited"]
