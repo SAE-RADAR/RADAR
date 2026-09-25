@@ -2,15 +2,26 @@
 class_name InfoBox
 extends Node3D
 
-## Floating panel showing information about a place: title, subtitle, a
-## picture, a description, a list of key facts and a source line.
+## Information point: an icon that opens into a panel about a place when the
+## player looks at it, and closes back into the icon when they look away.
 ##
-## The text comes from an [InfoBoxData] resource, so the same box can present
-## any place. The panel is centered on this node, sizes itself to its content,
-## and can turn to face the player and fade in only when they come close.
+## The panel shows a title, subtitle, a picture, a description, a list of key
+## facts and a source line, all read from an [InfoBoxData] resource so the same
+## box can present any place. It sizes itself to its content, is centered on
+## this node where the icon sits, and turns to face the player.
+##
+## Looking is detected with [member gaze_ray], a ray from the player's head:
+## the icon and the open panel each carry an area on [member gaze_layer] for it
+## to hit.
 
 ## Depth offset keeping the text in front of the background.
 const TEXT_OFFSET := 0.002
+
+## Scale of the panel while closed. Not zero, so its gaze area stays valid.
+const CLOSED_SCALE := Vector3(0.01, 0.01, 0.01)
+
+## Thickness of the gaze area over the open panel.
+const PANEL_GAZE_DEPTH := 0.05
 
 @export var data: InfoBoxData:
 	set(value):
@@ -109,21 +120,69 @@ const TEXT_OFFSET := 0.002
 		muted_color = value
 		_queue_layout()
 
-@export_group("Behavior")
+@export_group("Icon")
+## Shown in place of the panel until the player looks at it.
+@export var icon: Texture2D = preload("res://assets/thermes/texture/Information.webp"):
+	set(value):
+		icon = value
+		_queue_layout()
+
+## Icon height, in meters.
+@export_range(0.05, 2.0, 0.01, "suffix:m") var icon_size := 0.35:
+	set(value):
+		icon_size = value
+		_queue_layout()
+
+@export_group("Gaze")
+## Ray from the player's head, e.g. a RayCast3D under the XRCamera3D. It must
+## collide with areas and its mask must include [member gaze_layer].
+@export var gaze_ray: RayCast3D
+
+## Physics layer of the areas the gaze ray looks for.
+@export_flags_3d_physics var gaze_layer := 2:
+	set(value):
+		gaze_layer = value
+		_queue_layout()
+
+## Radius around the icon that counts as looking at it.
+@export_range(0.05, 3.0, 0.01, "suffix:m") var gaze_radius := 0.5:
+	set(value):
+		gaze_radius = value
+		_queue_layout()
+
+## Seconds the player can look away before the panel closes, so a glance off
+## its edge doesn't close it.
+@export_range(0.0, 3.0, 0.05, "suffix:s") var close_delay := 0.3
+
+@export_group("Animation")
+## Seconds for the panel to pop open, and to shrink back into the icon.
+@export_range(0.0, 2.0, 0.05, "suffix:s") var open_time := 0.3
+@export_range(0.0, 2.0, 0.05, "suffix:s") var close_time := 0.2
+
 ## Turns the panel around its vertical axis to face the player.
 @export var face_player := true
 
 ## How quickly the panel turns toward the player, per second.
 @export var turn_speed := 4.0
 
-## Distance from the player within which the panel shows; 0 always shows it.
-@export_range(0.0, 50.0, 0.1, "suffix:m") var show_distance := 0.0
+## In the editor, shows the panel open instead of the icon.
+@export var preview_open := true:
+	set(value):
+		preview_open = value
+		if Engine.is_editor_hint() and is_node_ready():
+			_set_open_now(preview_open)
 
-## Seconds to fade in or out.
-@export var fade_time := 0.4
-
+var _icon: Sprite3D
+var _icon_area: Area3D
+var _icon_shape: SphereShape3D
+# Turns to face the player.
 var _panel: Node3D
+# Scales to open and close, around the panel's center.
+var _pop: Node3D
+# Holds the content, laid out from its top edge.
 var _content: Node3D
+var _panel_area: Area3D
+var _panel_shape: BoxShape3D
 var _background: MeshInstance3D
 var _divider: MeshInstance3D
 var _title: Label3D
@@ -133,35 +192,94 @@ var _description: Label3D
 var _source: Label3D
 var _fact_labels: Array[Label3D] = []
 var _layout_queued := false
-var _opacity := 1.0
+var _open := false
+var _look_away_time := 0.0
+var _tween: Tween
 
 
 func _ready() -> void:
 	_build()
 	_layout()
-	if not Engine.is_editor_hint() and show_distance > 0.0:
-		_opacity = 0.0
-		_apply_opacity()
+	if Engine.is_editor_hint():
+		_set_open_now(preview_open)
+		return
+	_set_open_now(false)
+	if not gaze_ray:
+		push_warning("InfoBox %s has no gaze ray, it will never open." % get_path())
 
 
 func _process(delta: float) -> void:
 	if Engine.is_editor_hint():
 		return
+
+	if _is_looked_at():
+		_look_away_time = 0.0
+		show_info()
+	elif _open:
+		_look_away_time += delta
+		if _look_away_time >= close_delay:
+			hide_info()
+
 	var camera := get_viewport().get_camera_3d()
-	if not camera:
+	if face_player and camera and _panel.visible:
+		_face(camera.global_position, 1.0 - exp(-turn_speed * delta))
+
+
+## Pops the panel open in place of the icon.
+func show_info() -> void:
+	if _open:
 		return
+	_open = true
+	_look_away_time = 0.0
+	_icon.visible = false
+	_panel.visible = true
+	# Open already facing the player rather than swinging round.
+	var camera := get_viewport().get_camera_3d()
+	if face_player and camera:
+		_face(camera.global_position, 1.0)
 
-	if face_player:
-		_turn_toward(camera.global_position, delta)
-
-	var shown := show_distance <= 0.0 or global_position.distance_to(camera.global_position) <= show_distance
-	var target := 1.0 if shown else 0.0
-	if _opacity != target:
-		_opacity = move_toward(_opacity, target, delta / maxf(fade_time, 0.001))
-		_apply_opacity()
+	var tween := _restart_tween().set_ease(Tween.EASE_OUT)
+	tween.tween_property(_pop, "scale", Vector3.ONE, open_time)
 
 
-func _turn_toward(target_position: Vector3, delta: float) -> void:
+## Shrinks the panel away and brings the icon back.
+func hide_info() -> void:
+	if not _open:
+		return
+	_open = false
+	_icon.visible = true
+
+	var tween := _restart_tween().set_ease(Tween.EASE_IN)
+	tween.tween_property(_pop, "scale", CLOSED_SCALE, close_time)
+	tween.tween_callback(_panel.hide)
+
+
+func _is_looked_at() -> bool:
+	if not gaze_ray or not gaze_ray.is_colliding():
+		return false
+	var hit := gaze_ray.get_collider()
+	return hit == _icon_area or hit == _panel_area
+
+
+func _restart_tween() -> Tween:
+	if _tween:
+		_tween.kill()
+	_tween = create_tween().set_trans(Tween.TRANS_BACK)
+	return _tween
+
+
+func _set_open_now(open: bool) -> void:
+	if _tween:
+		_tween.kill()
+	_open = open
+	_icon.visible = not open
+	_panel.visible = open
+	_pop.scale = Vector3.ONE if open else CLOSED_SCALE
+
+
+## Turns the panel toward [param target_position] by [param weight] (1 turns
+## all the way).
+func _face(target_position: Vector3, weight: float) -> void:
 	var to_target := target_position - global_position
 	to_target.y = 0.0
 	if to_target.length_squared() < 0.0001:
@@ -169,19 +287,33 @@ func _turn_toward(target_position: Vector3, delta: float) -> void:
 	# The text faces +Z, so point -Z away from the player.
 	var goal := Basis.looking_at(-to_target.normalized()).get_rotation_quaternion()
 	var current := _panel.global_basis.get_rotation_quaternion()
-	var turned := current.slerp(goal, 1.0 - exp(-turn_speed * delta))
-	_panel.global_basis = Basis(turned).scaled(global_basis.get_scale())
+	_panel.global_basis = Basis(current.slerp(goal, weight)).scaled(global_basis.get_scale())
 
 
 func _build() -> void:
 	# Internal children are regenerated on load, never saved with the scene.
+	_icon = Sprite3D.new()
+	_icon.name = "Icon"
+	_icon.billboard = BaseMaterial3D.BILLBOARD_ENABLED
+	add_child(_icon, false, INTERNAL_MODE_BACK)
+
+	_icon_shape = SphereShape3D.new()
+	_icon_area = _make_gaze_area(_icon_shape, self)
+
 	_panel = Node3D.new()
 	_panel.name = "Panel"
 	add_child(_panel, false, INTERNAL_MODE_BACK)
 
+	_pop = Node3D.new()
+	_pop.name = "Pop"
+	_panel.add_child(_pop)
+
 	_content = Node3D.new()
 	_content.name = "Content"
-	_panel.add_child(_content)
+	_pop.add_child(_content)
+
+	_panel_shape = BoxShape3D.new()
+	_panel_area = _make_gaze_area(_panel_shape, _pop)
 
 	_background = _make_quad(0)
 	_divider = _make_quad(1)
@@ -204,11 +336,18 @@ func _queue_layout() -> void:
 
 
 ## Places every block from the top of the panel down, then sizes the
-## background to fit and centers the whole panel on this node.
+## background and gaze area to fit and centers the panel on this node.
 func _layout() -> void:
 	_layout_queued = false
 	if not _content:
 		return
+
+	_icon.texture = icon
+	if icon:
+		_icon.pixel_size = icon_size / maxf(icon.get_height(), 1.0)
+	_icon_shape.radius = gaze_radius
+	_icon_area.collision_layer = gaze_layer
+	_panel_area.collision_layer = gaze_layer
 
 	for label in _fact_labels:
 		_content.remove_child(label)
@@ -269,8 +408,7 @@ func _layout() -> void:
 	(_background.material_override as StandardMaterial3D).albedo_color = background_color
 	_background.position = Vector3(0.0, -height / 2.0, 0.0)
 	_content.position = Vector3(0.0, height / 2.0, 0.0)
-
-	_apply_opacity()
+	_panel_shape.size = Vector3(width, height, PANEL_GAZE_DEPTH)
 
 
 ## Shows [param text] in [param label] with its top-left corner at
@@ -295,15 +433,6 @@ func _label_height(label: Label3D) -> float:
 			label.text, label.horizontal_alignment, label.width, label.font_size, -1,
 			TextServer.BREAK_MANDATORY | TextServer.BREAK_WORD_BOUND)
 	return size.y * label.pixel_size
-
-
-func _apply_opacity() -> void:
-	if not _panel:
-		return
-	_panel.visible = _opacity > 0.0
-	for child in _content.get_children():
-		if child is GeometryInstance3D:
-			child.transparency = 1.0 - _opacity
 
 
 func _make_label() -> Label3D:
@@ -332,3 +461,18 @@ func _make_quad(priority: int) -> MeshInstance3D:
 	quad.cast_shadow = GeometryInstance3D.SHADOW_CASTING_SETTING_OFF
 	_content.add_child(quad)
 	return quad
+
+
+## Area the gaze ray hits; it only needs to be found, not to detect anything.
+func _make_gaze_area(shape: Shape3D, parent: Node) -> Area3D:
+	var area := Area3D.new()
+	area.name = "GazeArea"
+	area.collision_mask = 0
+	var collision := CollisionShape3D.new()
+	collision.shape = shape
+	area.add_child(collision)
+	if parent == self:
+		add_child(area, false, INTERNAL_MODE_BACK)
+	else:
+		parent.add_child(area)
+	return area
