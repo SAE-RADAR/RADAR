@@ -1,0 +1,8 @@
+[gd_resource type="Resource" script_class="InfoBoxData" format=3 uid="uid://b8raoxx53xed7"]
+
+[ext_resource type="Script" uid="uid://bms04r03j5i3x" path="res://scenes/ui/info_box_data.gd" id="1_data"]
+
+[resource]
+script = ExtResource("1_data")
+title = "Les Thermes"
+description = "Ce bassin faisait partie de l'ancien complexe thermal."

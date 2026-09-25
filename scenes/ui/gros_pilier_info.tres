@@ -1,0 +1,17 @@
+[gd_resource type="Resource" script_class="InfoBoxData" format=3 uid="uid://drkipp4yan4mn"]
+
+[ext_resource type="Script" uid="uid://bms04r03j5i3x" path="res://scenes/ui/info_box_data.gd" id="1_data"]
+
+[resource]
+script = ExtResource("1_data")
+title = "Tour du Gros-Pilier"
+subtitle = "Le Mans · XIVe siècle"
+description = "Élevée vers 1370-1380 à l'initiative de Louis Ier, duc d'Anjou, la tour du Gros-Pilier fut bâtie en avant de l'enceinte gallo-romaine de la Cité Plantagenêt. Elle est aujourd'hui le principal vestige de l'ancien palais des comtes du Maine, derrière l'Hôtel de Ville."
+facts = Dictionary[String, String]({
+"Commanditaire": "Louis Ier d'Anjou",
+"Construction": "Vers 1370-1380",
+"Enceinte romaine": "IVe siècle, env. 1 300 m, classée monument historique en 1862",
+"Situation": "Derrière l'Hôtel de Ville, Cité Plantagenêt",
+"Unesco": "Enceinte candidate au patrimoine mondial"
+})
+source = "Sources : Wikipédia, Inrap, Le Mans Tourisme"
