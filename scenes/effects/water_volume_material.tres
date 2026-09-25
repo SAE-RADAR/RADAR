@@ -1,0 +1,81 @@
+[gd_resource type="ShaderMaterial" format=3 uid="uid://wwsn2b2uweo1"]
+
+[ext_resource type="Shader" uid="uid://blh34tmtd5jrq" path="res://scenes/effects/water_volume.gdshader" id="1_shader"]
+
+[sub_resource type="FastNoiseLite" id="FastNoiseLite_foam_a"]
+noise_type = 2
+seed = 3
+frequency = 0.08
+
+[sub_resource type="NoiseTexture2D" id="NoiseTexture2D_foam_a"]
+noise = SubResource("FastNoiseLite_foam_a")
+seamless = true
+
+[sub_resource type="FastNoiseLite" id="FastNoiseLite_foam_b"]
+noise_type = 2
+seed = 4
+frequency = 0.1
+
+[sub_resource type="NoiseTexture2D" id="NoiseTexture2D_foam_b"]
+noise = SubResource("FastNoiseLite_foam_b")
+seamless = true
+
+[sub_resource type="FastNoiseLite" id="FastNoiseLite_wave_a"]
+seed = 1
+frequency = 0.03
+
+[sub_resource type="NoiseTexture2D" id="NoiseTexture2D_height_a"]
+noise = SubResource("FastNoiseLite_wave_a")
+seamless = true
+
+[sub_resource type="FastNoiseLite" id="FastNoiseLite_wave_b"]
+seed = 2
+frequency = 0.04
+
+[sub_resource type="NoiseTexture2D" id="NoiseTexture2D_height_b"]
+noise = SubResource("FastNoiseLite_wave_b")
+seamless = true
+
+[sub_resource type="NoiseTexture2D" id="NoiseTexture2D_normal_a"]
+noise = SubResource("FastNoiseLite_wave_a")
+seamless = true
+as_normal_map = true
+bump_strength = 4.0
+
+[sub_resource type="NoiseTexture2D" id="NoiseTexture2D_normal_b"]
+noise = SubResource("FastNoiseLite_wave_b")
+seamless = true
+as_normal_map = true
+bump_strength = 4.0
+
+[resource]
+render_priority = 0
+shader = ExtResource("1_shader")
+shader_parameter/absorption_color = Color(0.45, 0.78, 0.8, 1)
+shader_parameter/absorption_strength = 1.0
+shader_parameter/air_ior = 1.0
+shader_parameter/water_ior = 1.33
+shader_parameter/roughness = 0.05
+shader_parameter/wave_scale = Vector2(0.1, 0.1)
+shader_parameter/wave_a_speed = Vector2(0.02, 0)
+shader_parameter/wave_b_speed = Vector2(0, 0.02)
+shader_parameter/wave_mix = 0.5
+shader_parameter/normal_a = SubResource("NoiseTexture2D_normal_a")
+shader_parameter/normal_b = SubResource("NoiseTexture2D_normal_b")
+shader_parameter/normal_strength = 1.0
+shader_parameter/height_a = SubResource("NoiseTexture2D_height_a")
+shader_parameter/height_b = SubResource("NoiseTexture2D_height_b")
+shader_parameter/height_strength = 0.05
+shader_parameter/refraction_mode = 1
+shader_parameter/refraction_amount = 0.1
+shader_parameter/traced_refraction_distance = 20.0
+shader_parameter/traced_refraction_steps = 64
+shader_parameter/reflection_mode = 1
+shader_parameter/traced_reflection_distance = 20.0
+shader_parameter/traced_reflection_steps = 64
+shader_parameter/reflection_screen_fade = 0.05
+shader_parameter/shore_mode = 0
+shader_parameter/shore_depth = 0.1
+shader_parameter/foam_color = Color(1, 1, 1, 1)
+shader_parameter/foam_a = SubResource("NoiseTexture2D_foam_a")
+shader_parameter/foam_b = SubResource("NoiseTexture2D_foam_b")
