@@ -15,7 +15,8 @@
 [ext_resource type="AudioStream" uid="uid://djokqtwl304j" path="res://assets/thermes/audio/water.wav" id="13_2ien5"]
 [ext_resource type="Script" uid="uid://bcnjelb2ydah4" path="res://scripts/sound_zone.gd" id="13_wq47j"]
 [ext_resource type="Script" uid="uid://c0s34emgvtxg2" path="res://scenes/ui/info_box.gd" id="15_infobox"]
-[ext_resource type="Resource" path="res://scenes/ui/thermes_bassin_info.tres" id="16_info"]
+[ext_resource type="Resource" uid="uid://b8raoxx53xed7" path="res://scenes/ui/thermes_bassin_info.tres" id="16_info"]
+[ext_resource type="PackedScene" path="res://scenes/effects/fireflies.tscn" id="17_aeurs"]
 
 [sub_resource type="ShaderMaterial" id="ShaderMaterial_6yhrf"]
 shader = ExtResource("4_4ud56")
@@ -133,6 +134,10 @@ script = ExtResource("15_infobox")
 data = ExtResource("16_info")
 gaze_ray = NodePath("../XROrigin3D/XRCamera3D/GazeRay")
 gaze_radius = 1.0
+
+[node name="Fireflies" parent="." unique_id=2047624370 node_paths=PackedStringArray("left_hand", "right_hand") instance=ExtResource("17_aeurs")]
+left_hand = NodePath("")
+right_hand = NodePath("")
 
 [connection signal="body_entered" from="SoundZone_Water" to="SoundZone_Water" method="_on_body_entered"]
 [connection signal="body_exited" from="SoundZone_Water" to="SoundZone_Water" method="_on_body_exited"]
