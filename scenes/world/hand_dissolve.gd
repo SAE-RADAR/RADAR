@@ -44,7 +44,9 @@ var _reach := 0.0
 
 func _ready() -> void:
 	_material.shader = DissolveShader
-	for mesh_instance: MeshInstance3D in scan.find_children("*", "MeshInstance3D", true, false):
+	# Only the scan's own meshes: nodes built at runtime under it, like a
+	# WaterVolume's surface, have no owner and keep their own material.
+	for mesh_instance: MeshInstance3D in scan.find_children("*", "MeshInstance3D", true, true):
 		_meshes.append(mesh_instance)
 		var aabb := mesh_instance.global_transform * mesh_instance.get_aabb()
 		_reach = maxf(_reach, aabb.size.length())
