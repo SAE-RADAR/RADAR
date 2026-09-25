@@ -13,6 +13,8 @@
 [ext_resource type="Script" uid="uid://mefmk615ficv" path="res://scenes/world/hand_dissolve.gd" id="11_dissolve"]
 [ext_resource type="Script" uid="uid://dki1ixhua0856" path="res://scenes/world/player_spawn.gd" id="12_spawn"]
 [ext_resource type="PackedScene" path="res://scenes/effects/fireflies.tscn" id="13_fireflies"]
+[ext_resource type="Script" uid="uid://c0s34emgvtxg2" path="res://scenes/ui/info_box.gd" id="14_infobox"]
+[ext_resource type="Resource" path="res://scenes/ui/gros_pilier_info.tres" id="15_info"]
 
 [sub_resource type="ShaderMaterial" id="ShaderMaterial_aurora"]
 shader = ExtResource("10_aurora")
@@ -101,6 +103,11 @@ player_body = NodePath("../XROrigin3D/PlayerBody")
 spawn = NodePath("../XROrigin3D")
 start_xr = NodePath("../StartXR")
 
-[node name="Fireflies" parent="." node_paths=PackedStringArray("left_hand", "right_hand") instance=ExtResource("13_fireflies")]
+[node name="Fireflies" parent="." unique_id=94179338 node_paths=PackedStringArray("left_hand", "right_hand") instance=ExtResource("13_fireflies")]
 left_hand = NodePath("../XROrigin3D/LeftController")
 right_hand = NodePath("../XROrigin3D/RightController")
+
+[node name="GrosPilierInfo" type="Node3D" parent="." unique_id=1597814311]
+transform = Transform3D(-0.7240733, 0, -0.6897231, 0, 1, 0, 0.6897231, 0, -0.7240733, 2.8842466, 1.6, 0.60133016)
+script = ExtResource("14_infobox")
+data = ExtResource("15_info")
