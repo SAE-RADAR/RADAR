@@ -11,7 +11,7 @@ config_version=5
 [application]
 
 config/name="RADAR"
-run/main_scene="uid://lvkyswv2xgox"
+run/main_scene="res://scenes/navigation/room_choice/welcome_room.tscn"
 config/features=PackedStringArray("4.7", "Mobile")
 config/icon="res://icon.svg"
 
@@ -19,6 +19,8 @@ config/icon="res://icon.svg"
 
 XRToolsUserSettings="*uid://bqgb8i74tm0t"
 XRToolsRumbleManager="*uid://by853dk86g1qw"
+Interactions="*res://autoload/interactions.gd"
+Rooms="*res://scenes/navigation/room_choice/rooms.gd"
 
 [display]
 
