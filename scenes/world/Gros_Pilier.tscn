@@ -12,6 +12,7 @@
 [ext_resource type="Shader" uid="uid://cwhl4266d7xg8" path="res://scenes/world/aurora_sky.gdshader" id="10_aurora"]
 [ext_resource type="Script" uid="uid://mefmk615ficv" path="res://scenes/world/hand_dissolve.gd" id="11_dissolve"]
 [ext_resource type="Script" uid="uid://dki1ixhua0856" path="res://scenes/world/player_spawn.gd" id="12_spawn"]
+[ext_resource type="PackedScene" path="res://scenes/effects/fireflies.tscn" id="13_fireflies"]
 
 [sub_resource type="ShaderMaterial" id="ShaderMaterial_aurora"]
 shader = ExtResource("10_aurora")
@@ -99,3 +100,7 @@ script = ExtResource("12_spawn")
 player_body = NodePath("../XROrigin3D/PlayerBody")
 spawn = NodePath("../XROrigin3D")
 start_xr = NodePath("../StartXR")
+
+[node name="Fireflies" parent="." node_paths=PackedStringArray("left_hand", "right_hand") instance=ExtResource("13_fireflies")]
+left_hand = NodePath("../XROrigin3D/LeftController")
+right_hand = NodePath("../XROrigin3D/RightController")

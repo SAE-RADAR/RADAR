@@ -1,0 +1,28 @@
+[gd_scene format=3]
+
+[ext_resource type="Shader" path="res://scenes/effects/fireflies_process.gdshader" id="1_process"]
+[ext_resource type="Shader" path="res://scenes/effects/firefly.gdshader" id="2_draw"]
+[ext_resource type="Script" path="res://scenes/effects/fireflies.gd" id="3_script"]
+
+[sub_resource type="ShaderMaterial" id="ShaderMaterial_process"]
+shader = ExtResource("1_process")
+
+[sub_resource type="ShaderMaterial" id="ShaderMaterial_draw"]
+render_priority = 1
+shader = ExtResource("2_draw")
+
+[sub_resource type="QuadMesh" id="QuadMesh_firefly"]
+material = SubResource("ShaderMaterial_draw")
+size = Vector2(0.05, 0.05)
+
+[node name="Fireflies" type="GPUParticles3D"]
+cast_shadow = 0
+amount = 600
+lifetime = 20.0
+preprocess = 20.0
+fixed_fps = 0
+interpolate = false
+visibility_aabb = AABB(-7, -1, -8, 14, 6, 16)
+process_material = SubResource("ShaderMaterial_process")
+draw_pass_1 = SubResource("QuadMesh_firefly")
+script = ExtResource("3_script")
