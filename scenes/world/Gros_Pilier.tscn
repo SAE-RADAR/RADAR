@@ -1,0 +1,120 @@
+[gd_scene format=3 uid="uid://cown0t2mhoa6l"]
+
+[ext_resource type="PackedScene" uid="uid://cf4crrd4ppjvc" path="res://models/gros_pilier_quickscan.glb" id="1_lor5p"]
+[ext_resource type="Script" uid="uid://cmnjmml11k5sj" path="res://scenes/world/scan_collision.gd" id="2_scan"]
+[ext_resource type="PackedScene" uid="uid://clc5dre31iskm" path="res://addons/godot-xr-tools/xr/start_xr.tscn" id="3_startxr"]
+[ext_resource type="PackedScene" uid="uid://diyu06cw06syv" path="res://addons/godot-xr-tools/player/player_body.tscn" id="4_body"]
+[ext_resource type="PackedScene" uid="uid://b4kad2kuba1yn" path="res://addons/godot-xr-tools/hands/scenes/lowpoly/left_hand_low.tscn" id="5_lhand"]
+[ext_resource type="PackedScene" uid="uid://l2n30mpbkdyw" path="res://addons/godot-xr-tools/hands/scenes/lowpoly/right_hand_low.tscn" id="6_rhand"]
+[ext_resource type="PackedScene" uid="uid://fiul51tsyoop" path="res://addons/godot-xr-tools/functions/function_teleport.tscn" id="7_teleport"]
+[ext_resource type="PackedScene" uid="uid://b6bk2pj8vbj28" path="res://addons/godot-xr-tools/functions/movement_turn.tscn" id="8_turn"]
+[ext_resource type="Script" uid="uid://blp0diub88deu" path="res://scenes/effects/teleport_ripple.gd" id="9_ripple"]
+[ext_resource type="Shader" uid="uid://cwhl4266d7xg8" path="res://scenes/world/aurora_sky.gdshader" id="10_aurora"]
+[ext_resource type="Script" uid="uid://mefmk615ficv" path="res://scenes/world/hand_dissolve.gd" id="11_dissolve"]
+[ext_resource type="Script" uid="uid://dki1ixhua0856" path="res://scenes/world/player_spawn.gd" id="12_spawn"]
+[ext_resource type="PackedScene" path="res://scenes/effects/fireflies.tscn" id="13_fireflies"]
+[ext_resource type="Script" uid="uid://c0s34emgvtxg2" path="res://scenes/ui/info_box.gd" id="14_infobox"]
+[ext_resource type="Resource" path="res://scenes/ui/gros_pilier_info.tres" id="15_info"]
+
+[sub_resource type="ShaderMaterial" id="ShaderMaterial_aurora"]
+shader = ExtResource("10_aurora")
+shader_parameter/zenith_color = Color(0.004, 0.007, 0.022, 1)
+shader_parameter/horizon_color = Color(0.018, 0.03, 0.06, 1)
+shader_parameter/ground_color = Color(0.004, 0.005, 0.008, 1)
+shader_parameter/color_bottom = Color(0.6, 0.25, 0.9, 1)
+shader_parameter/color_main = Color(0.12, 1, 0.42, 1)
+shader_parameter/color_top = Color(0.75, 0.1, 0.35, 1)
+shader_parameter/brightness = 1.3
+shader_parameter/speed = 0.06
+shader_parameter/scale = 2.2
+shader_parameter/altitude = 1.0
+shader_parameter/thickness = 1.0
+shader_parameter/sharpness = 12.0
+shader_parameter/coverage = 0.5
+shader_parameter/band_position = 0.25
+shader_parameter/star_density = 0.22
+shader_parameter/star_brightness = 2.0
+shader_parameter/star_twinkle = 0.5
+shader_parameter/star_scale = 160.0
+
+[sub_resource type="Sky" id="Sky_aurora"]
+sky_material = SubResource("ShaderMaterial_aurora")
+radiance_size = 0
+
+[sub_resource type="Environment" id="Environment_scan"]
+background_mode = 2
+background_color = Color(0.55, 0.65, 0.75, 1)
+sky = SubResource("Sky_aurora")
+ambient_light_source = 2
+ambient_light_color = Color(1, 1, 1, 1)
+reflected_light_source = 1
+
+[node name="GrosPilier" type="Node3D" unique_id=1873002229]
+
+[node name="WorldEnvironment" type="WorldEnvironment" parent="." unique_id=1955333744]
+environment = SubResource("Environment_scan")
+
+[node name="gros_pilier_quickscan" parent="." unique_id=1917864606 instance=ExtResource("1_lor5p")]
+script = ExtResource("2_scan")
+
+[node name="StartXR" parent="." unique_id=2132929652 instance=ExtResource("3_startxr")]
+
+[node name="XROrigin3D" type="XROrigin3D" parent="." unique_id=1964309610]
+transform = Transform3D(-0.8, 0, 0.6, 0, 1, 0, -0.6, 0, -0.8, 1.5, 0.1, -2)
+
+[node name="XRCamera3D" type="XRCamera3D" parent="XROrigin3D" unique_id=1936629767]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1.7, 0)
+
+[node name="GazeRay" type="RayCast3D" parent="XROrigin3D/XRCamera3D"]
+target_position = Vector3(0, 0, -5)
+collision_mask = 2
+collide_with_areas = true
+collide_with_bodies = false
+
+[node name="LeftController" type="XRController3D" parent="XROrigin3D" unique_id=678079514]
+tracker = &"left_hand"
+pose = &"aim"
+
+[node name="LeftHand" parent="XROrigin3D/LeftController" unique_id=598715406 instance=ExtResource("5_lhand")]
+
+[node name="MovementTurn" parent="XROrigin3D/LeftController" unique_id=315066819 instance=ExtResource("8_turn")]
+
+[node name="RightController" type="XRController3D" parent="XROrigin3D" unique_id=802852290]
+tracker = &"right_hand"
+pose = &"aim"
+
+[node name="RightHand" parent="XROrigin3D/RightController" unique_id=287052154 instance=ExtResource("6_rhand")]
+
+[node name="FunctionTeleport" parent="XROrigin3D/RightController" unique_id=374681196 instance=ExtResource("7_teleport")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.02, -0.05, 0)
+
+[node name="PlayerBody" parent="XROrigin3D" unique_id=1658016560 instance=ExtResource("4_body")]
+
+[node name="TeleportRipple" type="Node" parent="." unique_id=28127639 node_paths=PackedStringArray("player_body")]
+script = ExtResource("9_ripple")
+player_body = NodePath("../XROrigin3D/PlayerBody")
+
+[node name="HandDissolve" type="Node" parent="." unique_id=1814720129 node_paths=PackedStringArray("scan", "camera", "left_hand", "right_hand")]
+script = ExtResource("11_dissolve")
+scan = NodePath("../gros_pilier_quickscan")
+camera = NodePath("../XROrigin3D/XRCamera3D")
+left_hand = NodePath("../XROrigin3D/LeftController")
+right_hand = NodePath("../XROrigin3D/RightController")
+spread_speed = 0.5
+max_radius = 0.5
+
+[node name="PlayerSpawn" type="Node" parent="." unique_id=1111593489 node_paths=PackedStringArray("player_body", "spawn", "start_xr")]
+script = ExtResource("12_spawn")
+player_body = NodePath("../XROrigin3D/PlayerBody")
+spawn = NodePath("../XROrigin3D")
+start_xr = NodePath("../StartXR")
+
+[node name="Fireflies" parent="." unique_id=94179338 node_paths=PackedStringArray("left_hand", "right_hand") instance=ExtResource("13_fireflies")]
+left_hand = NodePath("../XROrigin3D/LeftController")
+right_hand = NodePath("../XROrigin3D/RightController")
+
+[node name="GrosPilierInfo" type="Node3D" parent="." unique_id=1597814311 node_paths=PackedStringArray("gaze_ray")]
+transform = Transform3D(-0.7240733, 0, -0.6897231, 0, 1, 0, 0.6897231, 0, -0.7240733, 2.8842466, 1.6, 0.60133016)
+script = ExtResource("14_infobox")
+data = ExtResource("15_info")
+gaze_ray = NodePath("../XROrigin3D/XRCamera3D/GazeRay")

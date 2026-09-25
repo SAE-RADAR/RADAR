@@ -1,0 +1,140 @@
+[gd_scene format=3 uid="uid://lvkyswv2xgox"]
+
+[ext_resource type="PackedScene" uid="uid://dqvpqa7g11b1v" path="res://assets/thermes/models/Thermes vestiges.fbx" id="1_dxh5j"]
+[ext_resource type="Script" uid="uid://cmnjmml11k5sj" path="res://scenes/world/scan_collision.gd" id="2_wd42d"]
+[ext_resource type="Script" uid="uid://ces1j6plojyra" path="res://addons/godot-xr-tools/xr/start_xr.gd" id="2_ydk6e"]
+[ext_resource type="Shader" uid="uid://cwhl4266d7xg8" path="res://scenes/world/aurora_sky.gdshader" id="4_4ud56"]
+[ext_resource type="PackedScene" uid="uid://b4kad2kuba1yn" path="res://addons/godot-xr-tools/hands/scenes/lowpoly/left_hand_low.tscn" id="4_eecs3"]
+[ext_resource type="PackedScene" uid="uid://b6bk2pj8vbj28" path="res://addons/godot-xr-tools/functions/movement_turn.tscn" id="5_wd42d"]
+[ext_resource type="PackedScene" uid="uid://l2n30mpbkdyw" path="res://addons/godot-xr-tools/hands/scenes/lowpoly/right_hand_low.tscn" id="6_2ien5"]
+[ext_resource type="PackedScene" uid="uid://fiul51tsyoop" path="res://addons/godot-xr-tools/functions/function_teleport.tscn" id="7_wq47j"]
+[ext_resource type="PackedScene" uid="uid://diyu06cw06syv" path="res://addons/godot-xr-tools/player/player_body.tscn" id="8_s7vb3"]
+[ext_resource type="Script" uid="uid://blp0diub88deu" path="res://scenes/effects/teleport_ripple.gd" id="9_1c0qi"]
+[ext_resource type="Script" uid="uid://mefmk615ficv" path="res://scenes/world/hand_dissolve.gd" id="10_aeurs"]
+[ext_resource type="Script" uid="uid://dki1ixhua0856" path="res://scenes/world/player_spawn.gd" id="11_wwynm"]
+[ext_resource type="AudioStream" uid="uid://djokqtwl304j" path="res://assets/thermes/audio/water.wav" id="13_2ien5"]
+[ext_resource type="Script" uid="uid://bcnjelb2ydah4" path="res://scripts/sound_zone.gd" id="13_wq47j"]
+[ext_resource type="Script" uid="uid://c0s34emgvtxg2" path="res://scenes/ui/info_box.gd" id="15_infobox"]
+[ext_resource type="Resource" path="res://scenes/ui/thermes_bassin_info.tres" id="16_info"]
+
+[sub_resource type="ShaderMaterial" id="ShaderMaterial_6yhrf"]
+shader = ExtResource("4_4ud56")
+shader_parameter/zenith_color = Color(0.004, 0.007, 0.022, 1)
+shader_parameter/horizon_color = Color(0.018, 0.03, 0.06, 1)
+shader_parameter/ground_color = Color(0.004, 0.005, 0.008, 1)
+shader_parameter/color_bottom = Color(0.6, 0.25, 0.9, 1)
+shader_parameter/color_main = Color(0.12, 1, 0.42, 1)
+shader_parameter/color_top = Color(0.75, 0.1, 0.35, 1)
+shader_parameter/brightness = 1.3
+shader_parameter/speed = 0.06
+shader_parameter/scale = 2.2
+shader_parameter/altitude = 1.0
+shader_parameter/thickness = 1.0
+shader_parameter/sharpness = 12.0
+shader_parameter/coverage = 0.5
+shader_parameter/band_position = 0.25
+shader_parameter/star_density = 0.22
+shader_parameter/star_brightness = 2.0
+shader_parameter/star_twinkle = 0.5
+shader_parameter/star_scale = 160.0
+
+[sub_resource type="Sky" id="Sky_aurora"]
+sky_material = SubResource("ShaderMaterial_6yhrf")
+radiance_size = 0
+
+[sub_resource type="Environment" id="Environment_ntjg7"]
+background_mode = 2
+background_color = Color(0.55, 0.65, 0.75, 1)
+sky = SubResource("Sky_aurora")
+ambient_light_source = 2
+ambient_light_color = Color(1, 1, 1, 1)
+reflected_light_source = 1
+
+[sub_resource type="SphereShape3D" id="SphereShape3D_yk851"]
+radius = 3.0
+
+[node name="Thermes" type="Node3D" unique_id=973039007]
+
+[node name="Thermes vestiges" parent="." unique_id=1749650180 instance=ExtResource("1_dxh5j")]
+script = ExtResource("2_wd42d")
+
+[node name="XRToolsStartXR" type="Node" parent="." unique_id=1586718985]
+script = ExtResource("2_ydk6e")
+metadata/_custom_type_script = "uid://ces1j6plojyra"
+
+[node name="WorldEnvironment" type="WorldEnvironment" parent="." unique_id=1155274397]
+environment = SubResource("Environment_ntjg7")
+
+[node name="XROrigin3D" type="XROrigin3D" parent="." unique_id=1865543045]
+transform = Transform3D(-0.8, 0, 0.6, 0, 1, 0, -0.6, 0, -0.8, -3.076, 0.74243176, -6.92)
+
+[node name="XRCamera3D" type="XRCamera3D" parent="XROrigin3D" unique_id=1760349337]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1.7, 0)
+
+[node name="GazeRay" type="RayCast3D" parent="XROrigin3D/XRCamera3D" unique_id=1069463939]
+target_position = Vector3(0, 0, -5)
+collision_mask = 2
+collide_with_areas = true
+collide_with_bodies = false
+debug_shape_custom_color = Color(0.7569271, 0.60670614, 1, 1)
+debug_shape_thickness = 5
+
+[node name="LeftController" type="XRController3D" parent="XROrigin3D" unique_id=71102444]
+tracker = &"left_hand"
+pose = &"aim"
+
+[node name="LeftHand" parent="XROrigin3D/LeftController" unique_id=755394590 instance=ExtResource("4_eecs3")]
+
+[node name="MovementTurn" parent="XROrigin3D/LeftController" unique_id=1283892211 instance=ExtResource("5_wd42d")]
+
+[node name="RightController" type="XRController3D" parent="XROrigin3D" unique_id=17310022]
+tracker = &"right_hand"
+pose = &"aim"
+
+[node name="RightHand" parent="XROrigin3D/RightController" unique_id=92590675 instance=ExtResource("6_2ien5")]
+
+[node name="FunctionTeleport" parent="XROrigin3D/RightController" unique_id=1007716296 instance=ExtResource("7_wq47j")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.02, -0.05, 0)
+
+[node name="PlayerBody" parent="XROrigin3D" unique_id=319631433 instance=ExtResource("8_s7vb3")]
+
+[node name="TeleportRipple" type="Node" parent="." unique_id=93470574]
+script = ExtResource("9_1c0qi")
+
+[node name="HandDissolve" type="Node" parent="." unique_id=90942457 node_paths=PackedStringArray("scan", "camera", "left_hand", "right_hand")]
+script = ExtResource("10_aeurs")
+scan = NodePath("../Thermes vestiges")
+camera = NodePath("../XROrigin3D/XRCamera3D")
+left_hand = NodePath("../XROrigin3D/LeftController")
+right_hand = NodePath("../XROrigin3D/RightController")
+spread_speed = 0.5
+max_radius = 0.5
+
+[node name="PlayerSpawn" type="Node" parent="." unique_id=810012137 node_paths=PackedStringArray("player_body", "spawn", "start_xr")]
+script = ExtResource("11_wwynm")
+player_body = NodePath("../XROrigin3D/PlayerBody")
+spawn = NodePath("../XROrigin3D")
+start_xr = NodePath("../XRToolsStartXR")
+
+[node name="SoundZone_Water" type="Area3D" parent="." unique_id=336651767]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 2.593621, 1.6023076, 1.5932202)
+script = ExtResource("13_wq47j")
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="SoundZone_Water" unique_id=1581492082]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.0020079613, 0, -0.002414465)
+shape = SubResource("SphereShape3D_yk851")
+
+[node name="WaterSound" type="AudioStreamPlayer3D" parent="SoundZone_Water" unique_id=1295295126]
+stream = ExtResource("13_2ien5")
+
+[node name="InfoPoint_Bassin" type="Node3D" parent="." unique_id=666185837 node_paths=PackedStringArray("gaze_ray")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 2.4714618, 0)
+script = ExtResource("15_infobox")
+data = ExtResource("16_info")
+gaze_ray = NodePath("../XROrigin3D/XRCamera3D/GazeRay")
+gaze_radius = 1.0
+
+[connection signal="body_entered" from="SoundZone_Water" to="SoundZone_Water" method="_on_body_entered"]
+[connection signal="body_exited" from="SoundZone_Water" to="SoundZone_Water" method="_on_body_exited"]
+
+[editable path="Thermes vestiges"]
