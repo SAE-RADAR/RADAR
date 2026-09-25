@@ -719,7 +719,7 @@ func _update_body_under_camera(delta : float):
 
 		# See how far we can move
 		var safe := min(_head_shape_cast.get_closest_collision_safe_fraction(), max_head_distance / target_move_distance)
-		if safe < 1.0:
+		if target_move_distance > 0.0 and safe < 1.0:
 			# print("Attempted to move head from ", _head_shape_cast.transform.origin, " to ", camera_local_position, " => ", _head_shape_cast.target_position, ", safe: ", safe)
 
 			if head_behavior_mode == 0:
