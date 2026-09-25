@@ -79,3 +79,5 @@ shader_parameter/shore_depth = 0.1
 shader_parameter/foam_color = Color(1, 1, 1, 1)
 shader_parameter/foam_a = SubResource("NoiseTexture2D_foam_a")
 shader_parameter/foam_b = SubResource("NoiseTexture2D_foam_b")
+shader_parameter/fallback_water_distance = 1.0
+shader_parameter/debug_view = 0

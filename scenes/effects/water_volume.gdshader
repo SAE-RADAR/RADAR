@@ -63,6 +63,18 @@ uniform vec3 foam_color : source_color = vec3(1.0);
 uniform sampler2D foam_a : filter_linear_mipmap;
 uniform sampler2D foam_b : filter_linear_mipmap;
 
+group_uniforms fallback;
+// Distance seen through the water where the depth texture can't be read (it
+// comes back empty on some XR setups), in meters. No shore effect shows there.
+uniform float fallback_water_distance : hint_range(0.0, 10.0, 0.05) = 1.0;
+// Diagnose splits the surface into three strips across each eye's view:
+// left, the screen texture as read (should show what is under the water);
+// middle, the depth texture: green bands, one per meter of water, where it is
+// usable, red where it holds the near plane, blue where it holds the far
+// plane, yellow where it is in front of the water, magenta where it gives no
+// number; right, how shallow the water is thought to be, white at the shore.
+uniform int debug_view : hint_enum("Off", "Diagnose") = 0;
+
 // Keeps absorption finite where the depth buffer holds the sky.
 const float MAX_WATER_DISTANCE = 1000.0;
 
@@ -88,6 +100,18 @@ vec3 scene_position(vec2 uv, mat4 inv_projection) {
 #endif
 	vec4 position = inv_projection * vec4(ndc, 1.0);
 	return position.xyz / position.w;
+}
+
+
+bool is_finite(vec3 v) {
+	return !any(isnan(v)) && !any(isinf(v));
+}
+
+
+// The water is only drawn in front of the opaque scene, so a scene position
+// that isn't behind the surface means the depth texture holds nothing usable.
+bool has_depth(vec3 scene, vec3 vertex) {
+	return is_finite(scene) && scene.z < vertex.z;
 }
 
 
@@ -154,7 +178,8 @@ float trace(vec3 origin, vec3 direction, float max_distance, int steps, mat4 pro
 // What is seen through the surface.
 vec3 refracted_color(vec3 vertex, vec3 normal, vec3 flat_normal, vec2 screen_uv, vec2 viewport_size, bool from_below, mat4 projection, mat4 inv_projection) {
 	vec3 scene = scene_position(screen_uv, inv_projection);
-	float water_distance = distance(scene, vertex);
+	bool depth_ok = has_depth(scene, vertex);
+	float water_distance = depth_ok ? distance(scene, vertex) : fallback_water_distance;
 	vec2 uv = screen_uv;
 
 	if (refraction_mode == 2) {
@@ -172,13 +197,17 @@ vec3 refracted_color(vec3 vertex, vec3 normal, vec3 flat_normal, vec2 screen_uv,
 		vec2 offset = (normal - flat_normal).xy * refraction_amount;
 		offset.x *= viewport_size.y / viewport_size.x;
 		// Deeper water bends the view more.
-		offset *= water_distance / max(-scene.z, 0.001);
+		offset *= water_distance / max(water_distance - vertex.z, 0.001);
 		vec2 bent_uv = screen_uv + offset;
-		vec3 bent_scene = scene_position(bent_uv, inv_projection);
-		// Skip offsets landing on things in front of the water.
-		if (on_screen(bent_uv) && bent_scene.z < vertex.z) {
-			uv = bent_uv;
-			water_distance = distance(bent_scene, vertex);
+		if (on_screen(bent_uv)) {
+			vec3 bent_scene = scene_position(bent_uv, inv_projection);
+			if (!depth_ok) {
+				uv = bent_uv;
+			} else if (has_depth(bent_scene, vertex)) {
+				// Skip offsets landing on things in front of the water.
+				uv = bent_uv;
+				water_distance = distance(bent_scene, vertex);
+			}
 		}
 	}
 
@@ -245,8 +274,8 @@ void fragment() {
 		// The engine's reflections fill in where the screen has nothing.
 		SPECULAR = 0.5 * (1.0 - found);
 
-		if (shore_mode != 2) {
-			vec3 scene = scene_position(SCREEN_UV, INV_PROJECTION_MATRIX);
+		vec3 scene = scene_position(SCREEN_UV, INV_PROJECTION_MATRIX);
+		if (shore_mode != 2 && has_depth(scene, VERTEX)) {
 			float scene_height = (INV_VIEW_MATRIX * vec4(scene, 1.0)).y;
 			float shallowness = clamp((world_position.y - scene_height) / shore_depth, 0.0, 1.0);
 			if (shore_mode == 1) {
@@ -275,5 +304,35 @@ void fragment() {
 		EMISSION += reflection * found * (1.0 - transmission);
 		// The engine would reflect the sky, which can't be seen from below.
 		SPECULAR = 0.0;
+	}
+
+	if (debug_view == 1) {
+		vec3 scene = scene_position(SCREEN_UV, INV_PROJECTION_MATRIX);
+		vec3 color;
+		if (SCREEN_UV.x < 1.0 / 3.0) {
+			color = texture(screen_texture, SCREEN_UV).rgb;
+		} else if (SCREEN_UV.x < 2.0 / 3.0) {
+			float raw_depth = texture(depth_texture, SCREEN_UV).r;
+			if (raw_depth >= 1.0) {
+				color = vec3(1.0, 0.0, 0.0);
+			} else if (raw_depth <= 0.0) {
+				color = vec3(0.0, 0.0, 1.0);
+			} else if (!is_finite(scene)) {
+				color = vec3(1.0, 0.0, 1.0);
+			} else if (scene.z >= VERTEX.z) {
+				color = vec3(1.0, 1.0, 0.0);
+			} else {
+				color = vec3(0.0, mix(0.2, 1.0, fract(distance(scene, VERTEX))), 0.0);
+			}
+		} else {
+			float scene_height = (INV_VIEW_MATRIX * vec4(scene, 1.0)).y;
+			float deepness = (world_position.y - scene_height) / shore_depth;
+			color = isnan(deepness) ? vec3(1.0, 0.0, 1.0) : vec3(1.0 - clamp(deepness, 0.0, 1.0));
+		}
+		ALBEDO = vec3(0.0);
+		NORMAL = flat_normal;
+		SPECULAR = 0.0;
+		ALPHA = 1.0;
+		EMISSION = color;
 	}
 }

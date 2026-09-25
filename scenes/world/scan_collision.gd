@@ -8,7 +8,9 @@ extends Node3D
 
 
 func _ready() -> void:
-	for mesh_instance: MeshInstance3D in find_children("*", "MeshInstance3D", true, false):
+	# Only the scan's own meshes: nodes built at runtime under it, like a
+	# WaterVolume's surface, have no owner and get no collision.
+	for mesh_instance: MeshInstance3D in find_children("*", "MeshInstance3D", true, true):
 		if not mesh_instance.mesh:
 			continue
 

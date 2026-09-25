@@ -6,6 +6,7 @@
 [ext_resource type="Script" uid="uid://rkvwcm8wn2wa" path="res://scenes/effects/water_volume.gd" id="3_wwynm"]
 [ext_resource type="Shader" uid="uid://cwhl4266d7xg8" path="res://scenes/world/aurora_sky.gdshader" id="4_4ud56"]
 [ext_resource type="PackedScene" uid="uid://b4kad2kuba1yn" path="res://addons/godot-xr-tools/hands/scenes/lowpoly/left_hand_low.tscn" id="4_eecs3"]
+[ext_resource type="Material" uid="uid://wwsn2b2uweo1" path="res://scenes/effects/water_volume_material.tres" id="4_ijldy"]
 [ext_resource type="PackedScene" uid="uid://b6bk2pj8vbj28" path="res://addons/godot-xr-tools/functions/movement_turn.tscn" id="5_wd42d"]
 [ext_resource type="PackedScene" uid="uid://l2n30mpbkdyw" path="res://addons/godot-xr-tools/hands/scenes/lowpoly/right_hand_low.tscn" id="6_2ien5"]
 [ext_resource type="PackedScene" uid="uid://fiul51tsyoop" path="res://addons/godot-xr-tools/functions/function_teleport.tscn" id="7_wq47j"]
@@ -61,9 +62,10 @@ radius = 3.0
 script = ExtResource("2_wd42d")
 
 [node name="WaterVolume" type="Node3D" parent="Thermes vestiges" unique_id=1725915188]
-transform = Transform3D(0.58281714, 0, -0.81260335, 0, 1, 0, 0.81260335, 0, 0.58281714, 2.9418166, 1.0254432, 1.8868997)
+transform = Transform3D(0.58281714, 0, -0.81260335, 0, 1, 0, 0.81260335, 0, 0.58281714, 2.9418166, 1.0969187, 1.8868997)
 script = ExtResource("3_wwynm")
 size = Vector3(4.885, 1, 2.895)
+material = ExtResource("4_ijldy")
 
 [node name="XRToolsStartXR" type="Node" parent="." unique_id=1586718985]
 script = ExtResource("2_ydk6e")
