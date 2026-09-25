@@ -19,6 +19,8 @@ config/icon="res://icon.svg"
 
 XRToolsUserSettings="*uid://bqgb8i74tm0t"
 XRToolsRumbleManager="*uid://by853dk86g1qw"
+Interactions="*res://autoload/interactions.gd"
+Rooms="*res://scenes/navigation/room_choice/rooms.gd"
 
 [display]
 
