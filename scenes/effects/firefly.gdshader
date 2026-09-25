@@ -13,19 +13,22 @@ uniform float energy : hint_range(0.0, 8.0) = 1.4;
 uniform float blink_rate : hint_range(0.0, 2.0) = 0.35;
 // Brightness between flashes.
 uniform float idle_glow : hint_range(0.0, 1.0) = 0.12;
+// Size of gathered fireflies relative to free ones, so they fit on fingers.
+uniform float gathered_scale : hint_range(0.1, 1.0) = 0.5;
 
 varying vec3 tint;
 
 void vertex() {
+	float seed = INSTANCE_CUSTOM.x;
+	float life = INSTANCE_CUSTOM.y;
+	float gathered = INSTANCE_CUSTOM.z;
+
 	// Face the camera, keeping the particle's scale.
-	float s = length(MODEL_MATRIX[0].xyz);
+	float s = length(MODEL_MATRIX[0].xyz) * mix(1.0, gathered_scale, gathered);
 	MODELVIEW_MATRIX = VIEW_MATRIX * mat4(MAIN_CAM_INV_VIEW_MATRIX[0] * s, MAIN_CAM_INV_VIEW_MATRIX[1] * s,
 			MAIN_CAM_INV_VIEW_MATRIX[2] * s, MODEL_MATRIX[3]);
 	MODELVIEW_NORMAL_MATRIX = mat3(MODELVIEW_MATRIX);
 
-	float seed = INSTANCE_CUSTOM.x;
-	float life = INSTANCE_CUSTOM.y;
-	float gathered = INSTANCE_CUSTOM.z;
 	float fade = smoothstep(0.0, 0.08, life) * (1.0 - smoothstep(0.85, 1.0, life));
 	// A short flash once per cycle; each firefly has its own rate and phase.
 	float phase = fract(TIME * blink_rate * (0.6 + 0.8 * fract(seed * 13.7)) + seed);
