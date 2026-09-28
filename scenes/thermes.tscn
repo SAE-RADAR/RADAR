@@ -19,6 +19,7 @@
 [ext_resource type="Script" uid="uid://c0s34emgvtxg2" path="res://scenes/ui/info_box.gd" id="15_infobox"]
 [ext_resource type="Resource" uid="uid://b8raoxx53xed7" path="res://scenes/ui/thermes_bassin_info.tres" id="16_info"]
 [ext_resource type="PackedScene" path="res://scenes/effects/fireflies.tscn" id="17_aeurs"]
+[ext_resource type="Script" uid="uid://cwgv60m02vinv" path="res://scenes/effects/cascade.gd" id="20_iti14"]
 
 [sub_resource type="ShaderMaterial" id="ShaderMaterial_6yhrf"]
 shader = ExtResource("4_4ud56")
@@ -144,6 +145,12 @@ gaze_ray = NodePath("../XROrigin3D/XRCamera3D/GazeRay")
 gaze_radius = 1.0
 
 [node name="Fireflies" parent="." unique_id=2047624370 instance=ExtResource("17_aeurs")]
+
+[node name="Cascade" type="Node3D" parent="." unique_id=1291325511]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 2.9865043, 5.444454, 4.0798793)
+script = ExtResource("20_iti14")
+height = 5.85
+metadata/_custom_type_script = "uid://cwgv60m02vinv"
 
 [connection signal="body_entered" from="SoundZone_Water" to="SoundZone_Water" method="_on_body_entered"]
 [connection signal="body_exited" from="SoundZone_Water" to="SoundZone_Water" method="_on_body_exited"]
