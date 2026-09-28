@@ -17,6 +17,6 @@ Les tuyaux (`Pipe`, `scenes/effects/pipe.gd`) montrent comment l'eau circule dan
 
 - **Ajouter un tuyau** : ajouter un nœud `Pipe` (c'est un `Path3D`) et dessiner son trajet avec la courbe, juste derrière la surface du scan. L'eau va du premier point au dernier ; les angles vifs deviennent des coudes (`bend_radius`).
 - **Réglages par tuyau** : `inlet_temperature` / `outlet_temperature` (°C, en entrée et en sortie), `flow_speed` (m/s, 0 = eau immobile, sans flèches ; modifiable en jeu comme une vanne), `radius`.
-- **Échelle des couleurs** : commune à tous les tuyaux, dans `pipe_water_material.tres` (`temperature_ramp` et `temperature_range`, 10 à 45 °C par défaut). Taille et espacement des flèches au même endroit.
+- **Échelle des couleurs** : commune à tous les tuyaux, dans `pipe_water_material.tres` (quatre couleurs et `stop_temperatures`, de 10 °C en bleu à 45 °C en rouge par défaut). Taille et espacement des flèches au même endroit.
 - **Visibilité** : `HandDissolve` publie ses trous dans les globales de shader `DISSOLVE_SOURCE_0/1` (`project.godot`). Les tuyaux sont toujours visibles dans l'éditeur ; `always_visible` les montre aussi en jeu, pour déboguer (les murs les cachent quand même).
-- **Démo** : `scenes/effects/pipe_demo.tscn`, sur PC. Maintenir le clic droit sur un mur pour creuser.
+- **Démo** : `scenes/effects/pipe_demo.tscn`, sur PC, avec 7 postes (touches 1 à 7) : tuyaux cachés dans les murs (maintenir le clic droit sur le mur pour creuser), échelle des températures, vitesses, refroidissement le long d'un tuyau, coudes et courbes, vanne changée en jeu (`pipe_demo_valve.gd`), et un petit circuit foyer → caldarium → tepidarium, aqueduc → frigidarium.

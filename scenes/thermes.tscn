@@ -7,6 +7,7 @@
 [ext_resource type="Shader" uid="uid://cwhl4266d7xg8" path="res://scenes/world/aurora_sky.gdshader" id="4_4ud56"]
 [ext_resource type="PackedScene" uid="uid://b4kad2kuba1yn" path="res://addons/godot-xr-tools/hands/scenes/lowpoly/left_hand_low.tscn" id="4_eecs3"]
 [ext_resource type="Material" uid="uid://wwsn2b2uweo1" path="res://scenes/effects/water_volume_material.tres" id="4_ijldy"]
+[ext_resource type="Script" uid="uid://c7gf0s7t7g5xs" path="res://scenes/effects/pipe.gd" id="5_h0hxb"]
 [ext_resource type="PackedScene" uid="uid://b6bk2pj8vbj28" path="res://addons/godot-xr-tools/functions/movement_turn.tscn" id="5_wd42d"]
 [ext_resource type="PackedScene" uid="uid://l2n30mpbkdyw" path="res://addons/godot-xr-tools/hands/scenes/lowpoly/right_hand_low.tscn" id="6_2ien5"]
 [ext_resource type="PackedScene" uid="uid://fiul51tsyoop" path="res://addons/godot-xr-tools/functions/function_teleport.tscn" id="7_wq47j"]
@@ -20,6 +21,13 @@
 [ext_resource type="Resource" uid="uid://b8raoxx53xed7" path="res://scenes/ui/thermes_bassin_info.tres" id="16_info"]
 [ext_resource type="PackedScene" path="res://scenes/effects/fireflies.tscn" id="17_aeurs"]
 [ext_resource type="Script" uid="uid://cwgv60m02vinv" path="res://scenes/effects/cascade.gd" id="20_iti14"]
+
+[sub_resource type="Curve3D" id="Curve3D_icq5y"]
+_data = {
+"points": PackedVector3Array(0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 3.73, 0, 0),
+"tilts": PackedFloat32Array(0, 0)
+}
+point_count = 2
 
 [sub_resource type="ShaderMaterial" id="ShaderMaterial_6yhrf"]
 shader = ExtResource("4_4ud56")
@@ -67,6 +75,12 @@ transform = Transform3D(0.58281714, 0, -0.81260335, 0, 1, 0, 0.81260335, 0, 0.58
 script = ExtResource("3_wwynm")
 size = Vector3(4.885, 1, 2.895)
 material = ExtResource("4_ijldy")
+
+[node name="Pipe" type="Path3D" parent="Thermes vestiges" unique_id=1757426489]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -11.032751, 1.8922807, 1.302455)
+curve = SubResource("Curve3D_icq5y")
+script = ExtResource("5_h0hxb")
+metadata/_custom_type_script = "uid://c7gf0s7t7g5xs"
 
 [node name="XRToolsStartXR" type="Node" parent="." unique_id=1586718985]
 script = ExtResource("2_ydk6e")

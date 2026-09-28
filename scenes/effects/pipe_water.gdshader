@@ -24,13 +24,18 @@ instance uniform float flow_speed = 0.4;
 instance uniform float flow_offset = 0.0;
 
 group_uniforms temperature;
-// Colors from the coldest (left) to the hottest (right) of temperature_range.
-uniform sampler2D temperature_ramp : source_color, repeat_disable, filter_linear;
-// Temperatures at the ends of temperature_ramp, in °C; beyond, the end colors.
-uniform vec2 temperature_range = vec2(10.0, 45.0);
+// Color scale shared by every pipe: four stops, coldest first, at the
+// temperatures in stop_temperatures (°C); beyond the ends, the end colors.
+// Defaults live here rather than in a texture so the scale survives the
+// material losing its parameters.
+uniform vec4 stop_temperatures = vec4(10.0, 22.0, 33.0, 45.0);
+uniform vec3 cold_color : source_color = vec3(0.1, 0.35, 1.0);
+uniform vec3 cool_color : source_color = vec3(0.1, 0.85, 0.95);
+uniform vec3 warm_color : source_color = vec3(1.0, 0.8, 0.15);
+uniform vec3 hot_color : source_color = vec3(1.0, 0.12, 0.08);
 
 group_uniforms water;
-uniform float water_opacity : hint_range(0.0, 1.0) = 0.4;
+uniform float water_opacity : hint_range(0.0, 1.0) = 0.65;
 // Brightness of the water next to the arrows.
 uniform float water_brightness : hint_range(0.0, 2.0) = 0.55;
 // How much the streaks of current stand out.
@@ -78,8 +83,10 @@ float wrapped_noise(vec2 p, float period) {
 
 vec3 temperature_color(float along) {
 	float temperature = mix(inlet_temperature, outlet_temperature, clamp(along / max(pipe_length, 0.0001), 0.0, 1.0));
-	float x = (temperature - temperature_range.x) / max(temperature_range.y - temperature_range.x, 0.0001);
-	return texture(temperature_ramp, vec2(clamp(x, 0.0, 1.0), 0.5)).rgb;
+	vec4 t = stop_temperatures;
+	vec3 color = mix(cold_color, cool_color, clamp((temperature - t.x) / max(t.y - t.x, 0.0001), 0.0, 1.0));
+	color = mix(color, warm_color, clamp((temperature - t.y) / max(t.z - t.y, 0.0001), 0.0, 1.0));
+	return mix(color, hot_color, clamp((temperature - t.z) / max(t.w - t.z, 0.0001), 0.0, 1.0));
 }
 
 // Signed distance to an arrow pointing toward +x, centered on the origin:
