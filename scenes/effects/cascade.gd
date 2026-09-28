@@ -151,6 +151,9 @@ func _add_layer(layer_name: String, draw_shader: Shader) -> GPUParticles3D:
 	process.shader = PROCESS_SHADER
 	var draw := ShaderMaterial.new()
 	draw.shader = draw_shader
+	# Drawn after water surfaces, whose refraction comes from a copy of the
+	# screen taken before any transparent pass and would paint over them.
+	draw.render_priority = 1
 	var quad := QuadMesh.new()
 	quad.material = draw
 
@@ -255,8 +258,9 @@ func _update() -> void:
 		fade_out = 0.6,
 	})
 
-	# Foam spreading out on the water, thinning as it goes.
-	_foam.position = landing + Vector3(0.0, 0.02, 0.0)
+	# Foam spreading out on the water, thinning as it goes. Floats clear of
+	# the wave crests of a WaterVolume.
+	_foam.position = landing + Vector3(0.0, 0.04, 0.0)
 	_set_layer(_foam, 5.0, foam * 6.0 * width, {
 		emission_extents = Vector3(half_width * 0.8, 0.0, 0.2),
 		emission_direction = Vector3.FORWARD,

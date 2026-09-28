@@ -21,7 +21,7 @@ noise = SubResource("FastNoiseLite_streak")
 seamless = true
 
 [resource]
-render_priority = 0
+render_priority = 1
 shader = ExtResource("1_shader")
 shader_parameter/streak_noise = SubResource("NoiseTexture2D_streak")
 shader_parameter/ripple_normal = SubResource("NoiseTexture2D_ripple")
