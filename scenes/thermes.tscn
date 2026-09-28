@@ -62,6 +62,9 @@ ambient_light_source = 2
 ambient_light_color = Color(1, 1, 1, 1)
 reflected_light_source = 1
 
+[sub_resource type="SphereShape3D" id="SphereShape3D_ppuvh"]
+radius = 0.15
+
 [sub_resource type="SphereShape3D" id="SphereShape3D_yk851"]
 radius = 3.0
 
@@ -75,6 +78,30 @@ transform = Transform3D(0.58281714, 0, -0.81260335, 0, 1, 0, 0.81260335, 0, 0.58
 script = ExtResource("3_wwynm")
 size = Vector3(4.885, 1, 2.895)
 material = ExtResource("4_ijldy")
+wave_max_size = null
+wave_duration = null
+wave_height = null
+wave_opacity = null
+
+[node name="WaterVolume2" type="Node3D" parent="Thermes vestiges" unique_id=1788539347]
+transform = Transform3D(0.58281714, 0, -0.81260335, 0, 1, 0, 0.81260335, 0, 0.58281714, 3.4847052, 1.1756917, -2.7954028)
+script = ExtResource("3_wwynm")
+size = Vector3(14.5, 1, 10)
+material = ExtResource("4_ijldy")
+wave_max_size = null
+wave_duration = null
+wave_height = null
+wave_opacity = null
+
+[node name="WaterVolume3" type="Node3D" parent="Thermes vestiges" unique_id=1122508322]
+transform = Transform3D(-0.32064852, 0, -0.9471984, 0, 1, 0, 0.9471984, 0, -0.32064852, -3.0245779, 0.11287379, 1.9041822)
+script = ExtResource("3_wwynm")
+size = Vector3(15, 1, 10)
+material = ExtResource("4_ijldy")
+wave_max_size = null
+wave_duration = null
+wave_height = null
+wave_opacity = null
 
 [node name="Pipe" type="Path3D" parent="Thermes vestiges" unique_id=1757426489]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -11.032751, 1.8922807, 1.302455)
@@ -107,7 +134,7 @@ debug_shape_thickness = 5
 tracker = &"left_hand"
 pose = &"aim"
 
-[node name="LeftHand" parent="XROrigin3D/LeftController" unique_id=755394590 instance=ExtResource("4_eecs3")]
+[node name="LeftHand" parent="XROrigin3D/LeftController" unique_id=755394590 groups=["water_hand"] instance=ExtResource("4_eecs3")]
 
 [node name="MovementTurn" parent="XROrigin3D/LeftController" unique_id=1283892211 instance=ExtResource("5_wd42d")]
 
@@ -115,7 +142,10 @@ pose = &"aim"
 tracker = &"right_hand"
 pose = &"aim"
 
-[node name="RightHand" parent="XROrigin3D/RightController" unique_id=92590675 instance=ExtResource("6_2ien5")]
+[node name="RightHand" parent="XROrigin3D/RightController" unique_id=92590675 groups=["water_hand"] instance=ExtResource("6_2ien5")]
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="XROrigin3D/RightController/RightHand" unique_id=29967705]
+shape = SubResource("SphereShape3D_ppuvh")
 
 [node name="FunctionTeleport" parent="XROrigin3D/RightController" unique_id=1007716296 instance=ExtResource("7_wq47j")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.02, -0.05, 0)
