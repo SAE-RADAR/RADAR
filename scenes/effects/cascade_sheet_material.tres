@@ -1,0 +1,36 @@
+[gd_resource type="ShaderMaterial" format=3 uid="uid://djd64gbngrbya"]
+
+[ext_resource type="Shader" uid="uid://krypwflr1ahn" path="res://scenes/effects/cascade_sheet.gdshader" id="1_shader"]
+
+[sub_resource type="FastNoiseLite" id="FastNoiseLite_ripple"]
+seed = 8
+frequency = 0.03
+
+[sub_resource type="NoiseTexture2D" id="NoiseTexture2D_ripple"]
+noise = SubResource("FastNoiseLite_ripple")
+seamless = true
+as_normal_map = true
+bump_strength = 6.0
+
+[sub_resource type="FastNoiseLite" id="FastNoiseLite_streak"]
+seed = 7
+frequency = 0.02
+
+[sub_resource type="NoiseTexture2D" id="NoiseTexture2D_streak"]
+noise = SubResource("FastNoiseLite_streak")
+seamless = true
+
+[resource]
+render_priority = 0
+shader = ExtResource("1_shader")
+shader_parameter/streak_noise = SubResource("NoiseTexture2D_streak")
+shader_parameter/ripple_normal = SubResource("NoiseTexture2D_ripple")
+shader_parameter/aeration_length = 0.6
+shader_parameter/breakup = 0.95
+shader_parameter/tear_amount = 0.4
+shader_parameter/edge_fray = 0.25
+shader_parameter/streak_scale = Vector2(0.45, 0.3)
+shader_parameter/ripple_scale = Vector2(0.8, 0.6)
+shader_parameter/normal_strength = 1.2
+shader_parameter/wobble = 0.04
+shader_parameter/translucency = 0.5
