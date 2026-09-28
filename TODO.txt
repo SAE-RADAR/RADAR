@@ -1,0 +1,13 @@
+Ajout de :
+	Fumée d'eau
+	Feu
+	Cascades
+	Nuages de Vapeur
+	
+	
+	Tuyauteries -> montrer comment l'eau (flux -> températures) se déplace dans les thermes
+Garder le seethrough
+Ajouter zones de son / soundscapes
+Ajouter Réalité Augmentée -> superposition du scan et des vraies thermes
+Ajout des thermes passés -> Visite des thermes à leur apogée, basée sur les marques sur le site du Mans.
+Positionnement du modèle 3d -> marqueurs de suivis ?

@@ -43,6 +43,14 @@ textures/vram_compression/import_etc2_astc=true
 
 [shader_globals]
 
+DISSOLVE_SOURCE_0={
+"type": "vec4",
+"value": Vector4(0, 0, 0, 0)
+}
+DISSOLVE_SOURCE_1={
+"type": "vec4",
+"value": Vector4(0, 0, 0, 0)
+}
 META_ENVIRONMENT_DEPTH_AVAILABLE={
 "type": "bool",
 "value": false

@@ -1,0 +1,212 @@
+[gd_scene format=3]
+
+[ext_resource type="Script" uid="uid://cwgv60m02vinv" path="res://scenes/effects/cascade.gd" id="8_cascade"]
+[ext_resource type="Script" uid="uid://rkvwcm8wn2wa" path="res://scenes/effects/water_volume.gd" id="9_water_volume"]
+[ext_resource type="AudioStream" uid="uid://djokqtwl304j" path="res://assets/thermes/audio/water.wav" id="10_water_sound"]
+[ext_resource type="Script" path="res://scenes/effects/cascade_demo_camera.gd" id="11_camera"]
+
+[sub_resource type="ProceduralSkyMaterial" id="ProceduralSkyMaterial_day"]
+
+[sub_resource type="Sky" id="Sky_day"]
+sky_material = SubResource("ProceduralSkyMaterial_day")
+
+[sub_resource type="Environment" id="Environment_day"]
+background_mode = 2
+sky = SubResource("Sky_day")
+ambient_light_source = 3
+reflected_light_source = 2
+tonemap_mode = 2
+glow_enabled = true
+
+[sub_resource type="Gradient" id="Gradient_rock"]
+colors = PackedColorArray(0.55, 0.55, 0.55, 1, 1, 1, 1, 1)
+
+[sub_resource type="FastNoiseLite" id="FastNoiseLite_rock"]
+frequency = 0.05
+fractal_octaves = 5
+
+[sub_resource type="NoiseTexture2D" id="NoiseTexture2D_rock_albedo"]
+seamless = true
+color_ramp = SubResource("Gradient_rock")
+noise = SubResource("FastNoiseLite_rock")
+
+[sub_resource type="NoiseTexture2D" id="NoiseTexture2D_rock_normal"]
+seamless = true
+as_normal_map = true
+bump_strength = 12.0
+noise = SubResource("FastNoiseLite_rock")
+
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_ground"]
+albedo_color = Color(0.33, 0.36, 0.26, 1)
+albedo_texture = SubResource("NoiseTexture2D_rock_albedo")
+roughness = 1.0
+normal_enabled = true
+normal_texture = SubResource("NoiseTexture2D_rock_normal")
+uv1_scale = Vector3(0.35, 0.35, 0.35)
+uv1_triplanar = true
+
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_rock"]
+albedo_color = Color(0.46, 0.43, 0.4, 1)
+albedo_texture = SubResource("NoiseTexture2D_rock_albedo")
+roughness = 0.9
+normal_enabled = true
+normal_texture = SubResource("NoiseTexture2D_rock_normal")
+uv1_scale = Vector3(0.35, 0.35, 0.35)
+uv1_triplanar = true
+
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_wet_rock"]
+albedo_color = Color(0.24, 0.24, 0.22, 1)
+albedo_texture = SubResource("NoiseTexture2D_rock_albedo")
+roughness = 0.35
+normal_enabled = true
+normal_texture = SubResource("NoiseTexture2D_rock_normal")
+uv1_scale = Vector3(0.35, 0.35, 0.35)
+uv1_triplanar = true
+
+[node name="CascadeDemo" type="Node3D"]
+
+[node name="WorldEnvironment" type="WorldEnvironment" parent="."]
+environment = SubResource("Environment_day")
+
+[node name="Sun" type="DirectionalLight3D" parent="."]
+transform = Transform3D(0.8660254, -0.3213938, 0.3830222, 0, 0.7660444, 0.6427876, -0.5, -0.5566704, 0.6634139, 0, 10, 0)
+shadow_enabled = true
+
+[node name="Terrain" type="CSGCombiner3D" parent="."]
+use_collision = true
+
+[node name="Ground" type="CSGBox3D" parent="Terrain"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, -1, 0)
+size = Vector3(60, 2, 60)
+material = SubResource("StandardMaterial3D_ground")
+
+[node name="Cliff" type="CSGBox3D" parent="Terrain"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 3, -14)
+size = Vector3(20, 6, 6)
+material = SubResource("StandardMaterial3D_rock")
+
+[node name="Spout" type="CSGBox3D" parent="Terrain"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 6.5, 2.4, -10.75)
+size = Vector3(0.5, 0.2, 0.5)
+material = SubResource("StandardMaterial3D_rock")
+
+[node name="Terrace" type="CSGBox3D" parent="Terrain"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -14, 0.6, -11)
+size = Vector3(8, 1.2, 6)
+material = SubResource("StandardMaterial3D_rock")
+
+[node name="Pillar" type="CSGBox3D" parent="Terrain"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 12, 1.75, -10)
+size = Vector3(4, 3.5, 4)
+material = SubResource("StandardMaterial3D_rock")
+
+[node name="MainBasin" type="CSGBox3D" parent="Terrain"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 2, -0.15, -8)
+operation = 2
+size = Vector3(14, 1.3, 6)
+material = SubResource("StandardMaterial3D_wet_rock")
+
+[node name="TerraceBasin" type="CSGBox3D" parent="Terrain"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -14, -0.15, -6)
+operation = 2
+size = Vector3(8, 1.3, 4)
+material = SubResource("StandardMaterial3D_wet_rock")
+
+[node name="MainPool" type="Node3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 2, -0.15, -8)
+script = ExtResource("9_water_volume")
+size = Vector3(14, 0.65, 6)
+
+[node name="TerracePool" type="Node3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -14, -0.15, -6)
+script = ExtResource("9_water_volume")
+size = Vector3(8, 0.65, 4)
+
+[node name="TallFall" type="Node3D" parent="."]
+transform = Transform3D(-1, 0, 0, 0, 1, 0, 0, 0, -1, 0, 6, -11)
+script = ExtResource("8_cascade")
+width = 3.0
+height = 6.15
+flow_speed = 2.0
+sound = ExtResource("10_water_sound")
+
+[node name="TallFallLabel" type="Label3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1, -4.2)
+billboard = 2
+pixel_size = 0.004
+text = "Grande chute
+largeur 3 m · hauteur 6 m · 2 m/s"
+font_size = 40
+outline_size = 8
+
+[node name="Spillway" type="Node3D" parent="."]
+transform = Transform3D(-1, 0, 0, 0, 1, 0, 0, 0, -1, -14, 1.2, -8)
+script = ExtResource("8_cascade")
+width = 5.0
+height = 1.35
+flow_speed = 1.0
+density = 120.0
+spray = 0.6
+mist = 0.4
+
+[node name="SpillwayLabel" type="Label3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -14, 1, -3.2)
+billboard = 2
+pixel_size = 0.004
+text = "Déversoir
+largeur 5 m · hauteur 1,35 m · 1 m/s"
+font_size = 40
+outline_size = 8
+
+[node name="Gargoyle" type="Node3D" parent="."]
+transform = Transform3D(-1, 0, 0, 0, 1, 0, 0, 0, -1, 6.5, 2.5, -10.5)
+script = ExtResource("8_cascade")
+width = 0.25
+height = 2.65
+flow_speed = 3.0
+density = 200.0
+spray = 0.5
+mist = 0.3
+foam = 0.6
+
+[node name="GargoyleLabel" type="Label3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 6.5, 1, -4.2)
+billboard = 2
+pixel_size = 0.004
+text = "Gargouille
+largeur 0,25 m · hauteur 2,65 m · 3 m/s"
+font_size = 40
+outline_size = 8
+
+[node name="Trickle" type="Node3D" parent="."]
+transform = Transform3D(-1, 0, 0, 0, 1, 0, 0, 0, -1, 12, 3.5, -8)
+script = ExtResource("8_cascade")
+width = 0.4
+height = 3.5
+flow_speed = 0.6
+density = 80.0
+spray = 0.6
+mist = 0.3
+foam = 0.0
+
+[node name="TrickleLabel" type="Label3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 12, 1, -5.5)
+billboard = 2
+pixel_size = 0.004
+text = "Filet sur la roche
+largeur 0,4 m · hauteur 3,5 m · 0,6 m/s · sans écume"
+font_size = 40
+outline_size = 8
+
+[node name="Camera" type="Camera3D" parent="." node_paths=PackedStringArray("focus_points")]
+script = ExtResource("11_camera")
+focus_points = [NodePath("../TallFall"), NodePath("../Spillway"), NodePath("../Gargoyle"), NodePath("../Trickle")]
+
+[node name="Help" type="CanvasLayer" parent="."]
+
+[node name="Label" type="Label" parent="Help"]
+offset_left = 16.0
+offset_top = 16.0
+theme_override_colors/font_outline_color = Color(0, 0, 0, 1)
+theme_override_constants/outline_size = 6
+text = "Clic gauche + glisser : tourner · Molette : zoom · 1 à 4 : changer de cascade"
