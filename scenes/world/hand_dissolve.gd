@@ -5,14 +5,21 @@ extends Node
 ##
 ## A hand counts as "through" when the line from the head to the hand crosses
 ## the scan and the hand is past the surface by at least [member min_penetration].
+##
+## The dissolve fronts are also published as the global shader uniforms
+## DISSOLVE_SOURCE_0 and DISSOLVE_SOURCE_1 (xyz = origin, w = radius, 0 when
+## that hand isn't through), for what the scan hides, like [Pipe]s, to show in
+## the holes.
 
 const DissolveShader := preload("res://scenes/world/scan_dissolve.gdshader")
+const SOURCE_GLOBALS: Array[StringName] = [&"DISSOLVE_SOURCE_0", &"DISSOLVE_SOURCE_1"]
 
 ## Node holding the scanned meshes to dissolve.
 @export var scan: Node3D
-@export var camera: XRCamera3D
-@export var left_hand: XRController3D
-@export var right_hand: XRController3D
+@export var camera: Camera3D
+## Hands can be any node; an XRController3D only counts while tracked.
+@export var left_hand: Node3D
+@export var right_hand: Node3D
 
 ## Physics layers of the scan's collision.
 @export_flags_3d_physics var collision_mask := 1
@@ -60,10 +67,10 @@ func _ready() -> void:
 
 
 func _physics_process(delta: float) -> void:
-	var hands: Array[XRController3D] = [left_hand, right_hand]
+	var hands: Array[Node3D] = [left_hand, right_hand]
 	for i in hands.size():
 		var hit := {}
-		if hands[i] and hands[i].get_is_active():
+		if _is_tracked(hands[i]):
 			hit = _penetration(hands[i])
 			if hit.is_empty():
 				_armed[i] = true
@@ -88,10 +95,26 @@ func _physics_process(delta: float) -> void:
 	# Only pay for the dissolve shader while something is dissolving.
 	for mesh_instance in _meshes:
 		mesh_instance.material_override = _material if active else null
+	for i in SOURCE_GLOBALS.size():
+		RenderingServer.global_shader_parameter_set(SOURCE_GLOBALS[i],
+				Vector4(_origins[i].x, _origins[i].y, _origins[i].z, _radii[i]))
+
+
+func _exit_tree() -> void:
+	# Don't leave a hole open for the next room.
+	for global_name in SOURCE_GLOBALS:
+		RenderingServer.global_shader_parameter_set(global_name, Vector4.ZERO)
+
+
+func _is_tracked(hand: Node3D) -> bool:
+	if not hand:
+		return false
+	var controller := hand as XRController3D
+	return controller == null or controller.get_is_active()
 
 
 ## Where the head-to-hand line enters the scan, or empty if the hand isn't through.
-func _penetration(hand: XRController3D) -> Dictionary:
+func _penetration(hand: Node3D) -> Dictionary:
 	var from := camera.global_position
 	var to := hand.global_position
 	var query := PhysicsRayQueryParameters3D.create(from, to, collision_mask)
