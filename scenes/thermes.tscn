@@ -193,7 +193,7 @@ gaze_radius = 1.0
 [node name="Cascade" type="Node3D" parent="." unique_id=1291325511]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 2.9865043, 5.444454, 4.0798793)
 script = ExtResource("20_iti14")
-height = 5.85
+height = 4.25
 metadata/_custom_type_script = "uid://cwgv60m02vinv"
 
 [connection signal="body_entered" from="SoundZone_Water" to="SoundZone_Water" method="_on_body_entered"]
