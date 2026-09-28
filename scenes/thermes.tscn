@@ -19,6 +19,7 @@
 [ext_resource type="Script" uid="uid://c0s34emgvtxg2" path="res://scenes/ui/info_box.gd" id="15_infobox"]
 [ext_resource type="Resource" uid="uid://b8raoxx53xed7" path="res://scenes/ui/thermes_bassin_info.tres" id="16_info"]
 [ext_resource type="PackedScene" path="res://scenes/effects/fireflies.tscn" id="17_aeurs"]
+[ext_resource type="PackedScene" path="res://scenes/effects/steam/steam_clouds.tscn" id="18_steam"]
 
 [sub_resource type="ShaderMaterial" id="ShaderMaterial_6yhrf"]
 shader = ExtResource("4_4ud56")
@@ -66,6 +67,10 @@ transform = Transform3D(0.58281714, 0, -0.81260335, 0, 1, 0, 0.81260335, 0, 0.58
 script = ExtResource("3_wwynm")
 size = Vector3(4.885, 1, 2.895)
 material = ExtResource("4_ijldy")
+
+[node name="SteamClouds" parent="Thermes vestiges/WaterVolume" node_paths=PackedStringArray("left_hand", "right_hand") instance=ExtResource("18_steam")]
+left_hand = NodePath("../../../XROrigin3D/LeftController")
+right_hand = NodePath("../../../XROrigin3D/RightController")
 
 [node name="XRToolsStartXR" type="Node" parent="." unique_id=1586718985]
 script = ExtResource("2_ydk6e")
