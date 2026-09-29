@@ -1,0 +1,835 @@
+[gd_scene format=3 uid="uid://c2joqm054yje1"]
+
+[ext_resource type="Script" uid="uid://cmnjmml11k5sj" path="res://scenes/world/scan_collision.gd" id="1_scan_collision"]
+[ext_resource type="Script" uid="uid://c7gf0s7t7g5xs" path="res://scenes/effects/pipe.gd" id="2_pipe"]
+[ext_resource type="Script" uid="uid://c2a44l6ws43xu" path="res://scenes/effects/cascade_demo_camera.gd" id="3_camera"]
+[ext_resource type="Script" uid="uid://3tastrh4g2y6" path="res://scenes/effects/pipe_demo_hand.gd" id="4_hand"]
+[ext_resource type="Script" uid="uid://mefmk615ficv" path="res://scenes/world/hand_dissolve.gd" id="5_dissolve"]
+[ext_resource type="Script" uid="uid://babl65towu0xi" path="res://scenes/effects/pipe_demo_valve.gd" id="6_valve"]
+[ext_resource type="Script" uid="uid://rkvwcm8wn2wa" path="res://scenes/effects/water_volume.gd" id="7_water_volume"]
+
+[sub_resource type="ProceduralSkyMaterial" id="ProceduralSkyMaterial_day"]
+
+[sub_resource type="Sky" id="Sky_day"]
+sky_material = SubResource("ProceduralSkyMaterial_day")
+
+[sub_resource type="Environment" id="Environment_day"]
+background_mode = 2
+sky = SubResource("Sky_day")
+ambient_light_source = 3
+reflected_light_source = 2
+tonemap_mode = 2
+
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_floor"]
+albedo_color = Color(0.3, 0.28, 0.25, 1)
+
+[sub_resource type="PlaneMesh" id="PlaneMesh_floor"]
+material = SubResource("StandardMaterial3D_floor")
+size = Vector2(70, 20)
+
+[sub_resource type="Gradient" id="Gradient_stone"]
+colors = PackedColorArray(0.42, 0.37, 0.31, 1, 0.78, 0.72, 0.62, 1)
+
+[sub_resource type="FastNoiseLite" id="FastNoiseLite_stone"]
+frequency = 0.03
+
+[sub_resource type="NoiseTexture2D" id="NoiseTexture2D_stone"]
+noise = SubResource("FastNoiseLite_stone")
+color_ramp = SubResource("Gradient_stone")
+seamless = true
+
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_stone"]
+albedo_texture = SubResource("NoiseTexture2D_stone")
+roughness = 0.9
+
+[sub_resource type="BoxMesh" id="BoxMesh_back_wall"]
+material = SubResource("StandardMaterial3D_stone")
+size = Vector3(6, 3, 0.4)
+
+[sub_resource type="BoxMesh" id="BoxMesh_side_wall"]
+material = SubResource("StandardMaterial3D_stone")
+size = Vector3(0.4, 3, 4)
+
+[sub_resource type="Curve3D" id="Curve3D_Wall_HotPipe"]
+_data = {
+"points": PackedVector3Array(0, 0, 0, 0, 0, 0, -3.2, 2.2, 1.2, 0, 0, 0, 0, 0, 0, -3.2, 2.2, -2, 0, 0, 0, 0, 0, 0, 2.5, 2.2, -2, 0, 0, 0, 0, 0, 0, 2.5, 0.3, -2),
+"tilts": PackedFloat32Array(0, 0, 0, 0)
+}
+point_count = 4
+
+[sub_resource type="Curve3D" id="Curve3D_Wall_WarmPipe"]
+_data = {
+"points": PackedVector3Array(0, 0, 0, 0, 0, 0, 2.2, 1.4, -2, 0, 0, 0, 0, 0, 0, -3.2, 1.4, -2, 0, 0, 0, 0, 0, 0, -3.2, 1.4, 1.2),
+"tilts": PackedFloat32Array(0, 0, 0)
+}
+point_count = 3
+
+[sub_resource type="Curve3D" id="Curve3D_Wall_ColdPipe"]
+_data = {
+"points": PackedVector3Array(0, 0, 0, 0, 0, 0, 1.2, 0, -2, 0, 0, 0, 0, 0, 0, 1.2, 0.7, -2, 0, 0, 0, 0, 0, 0, -3.2, 0.7, -2, 0, 0, 0, 0, 0, 0, -3.2, 0.7, 0.4),
+"tilts": PackedFloat32Array(0, 0, 0, 0)
+}
+point_count = 4
+
+[sub_resource type="Curve3D" id="Curve3D_Scale_Pipe10"]
+_data = {
+"points": PackedVector3Array(0, 0, 0, 0, 0, 0, 7, 0.4, -2, 0, 0, 0, 0, 0, 0, 9.5, 0.4, -2),
+"tilts": PackedFloat32Array(0, 0)
+}
+point_count = 2
+
+[sub_resource type="Curve3D" id="Curve3D_Scale_Pipe15"]
+_data = {
+"points": PackedVector3Array(0, 0, 0, 0, 0, 0, 7, 0.7, -2, 0, 0, 0, 0, 0, 0, 9.5, 0.7, -2),
+"tilts": PackedFloat32Array(0, 0)
+}
+point_count = 2
+
+[sub_resource type="Curve3D" id="Curve3D_Scale_Pipe20"]
+_data = {
+"points": PackedVector3Array(0, 0, 0, 0, 0, 0, 7, 1, -2, 0, 0, 0, 0, 0, 0, 9.5, 1, -2),
+"tilts": PackedFloat32Array(0, 0)
+}
+point_count = 2
+
+[sub_resource type="Curve3D" id="Curve3D_Scale_Pipe25"]
+_data = {
+"points": PackedVector3Array(0, 0, 0, 0, 0, 0, 7, 1.3, -2, 0, 0, 0, 0, 0, 0, 9.5, 1.3, -2),
+"tilts": PackedFloat32Array(0, 0)
+}
+point_count = 2
+
+[sub_resource type="Curve3D" id="Curve3D_Scale_Pipe30"]
+_data = {
+"points": PackedVector3Array(0, 0, 0, 0, 0, 0, 7, 1.6, -2, 0, 0, 0, 0, 0, 0, 9.5, 1.6, -2),
+"tilts": PackedFloat32Array(0, 0)
+}
+point_count = 2
+
+[sub_resource type="Curve3D" id="Curve3D_Scale_Pipe35"]
+_data = {
+"points": PackedVector3Array(0, 0, 0, 0, 0, 0, 7, 1.9, -2, 0, 0, 0, 0, 0, 0, 9.5, 1.9, -2),
+"tilts": PackedFloat32Array(0, 0)
+}
+point_count = 2
+
+[sub_resource type="Curve3D" id="Curve3D_Scale_Pipe40"]
+_data = {
+"points": PackedVector3Array(0, 0, 0, 0, 0, 0, 7, 2.2, -2, 0, 0, 0, 0, 0, 0, 9.5, 2.2, -2),
+"tilts": PackedFloat32Array(0, 0)
+}
+point_count = 2
+
+[sub_resource type="Curve3D" id="Curve3D_Scale_Pipe45"]
+_data = {
+"points": PackedVector3Array(0, 0, 0, 0, 0, 0, 7, 2.5, -2, 0, 0, 0, 0, 0, 0, 9.5, 2.5, -2),
+"tilts": PackedFloat32Array(0, 0)
+}
+point_count = 2
+
+[sub_resource type="Curve3D" id="Curve3D_Speeds_Pipe0"]
+_data = {
+"points": PackedVector3Array(0, 0, 0, 0, 0, 0, 13, 0.6, -2, 0, 0, 0, 0, 0, 0, 15.5, 0.6, -2),
+"tilts": PackedFloat32Array(0, 0)
+}
+point_count = 2
+
+[sub_resource type="Curve3D" id="Curve3D_Speeds_Pipe1"]
+_data = {
+"points": PackedVector3Array(0, 0, 0, 0, 0, 0, 13, 1.2, -2, 0, 0, 0, 0, 0, 0, 15.5, 1.2, -2),
+"tilts": PackedFloat32Array(0, 0)
+}
+point_count = 2
+
+[sub_resource type="Curve3D" id="Curve3D_Speeds_Pipe2"]
+_data = {
+"points": PackedVector3Array(0, 0, 0, 0, 0, 0, 13, 1.8, -2, 0, 0, 0, 0, 0, 0, 15.5, 1.8, -2),
+"tilts": PackedFloat32Array(0, 0)
+}
+point_count = 2
+
+[sub_resource type="Curve3D" id="Curve3D_Speeds_Pipe3"]
+_data = {
+"points": PackedVector3Array(0, 0, 0, 0, 0, 0, 13, 2.4, -2, 0, 0, 0, 0, 0, 0, 15.5, 2.4, -2),
+"tilts": PackedFloat32Array(0, 0)
+}
+point_count = 2
+
+[sub_resource type="Curve3D" id="Curve3D_Cooling_Serpentine"]
+_data = {
+"points": PackedVector3Array(0, 0, 0, 0, 0, 0, 18.5, 2.6, -2, 0, 0, 0, 0, 0, 0, 21.5, 2.6, -2, 0, 0, 0, 0, 0, 0, 21.5, 2, -2, 0, 0, 0, 0, 0, 0, 18.5, 2, -2, 0, 0, 0, 0, 0, 0, 18.5, 1.4, -2, 0, 0, 0, 0, 0, 0, 21.5, 1.4, -2, 0, 0, 0, 0, 0, 0, 21.5, 0.8, -2, 0, 0, 0, 0, 0, 0, 18.5, 0.8, -2),
+"tilts": PackedFloat32Array(0, 0, 0, 0, 0, 0, 0, 0)
+}
+point_count = 8
+
+[sub_resource type="Curve3D" id="Curve3D_Shapes_ElbowSharp"]
+_data = {
+"points": PackedVector3Array(0, 0, 0, 0, 0, 0, 23.5, 0.5, -2, 0, 0, 0, 0, 0, 0, 23.5, 2, -2, 0, 0, 0, 0, 0, 0, 24.5, 2, -2),
+"tilts": PackedFloat32Array(0, 0, 0)
+}
+point_count = 3
+
+[sub_resource type="Curve3D" id="Curve3D_Shapes_ElbowSmall"]
+_data = {
+"points": PackedVector3Array(0, 0, 0, 0, 0, 0, 25, 0.5, -2, 0, 0, 0, 0, 0, 0, 25, 2, -2, 0, 0, 0, 0, 0, 0, 26, 2, -2),
+"tilts": PackedFloat32Array(0, 0, 0)
+}
+point_count = 3
+
+[sub_resource type="Curve3D" id="Curve3D_Shapes_ElbowWide"]
+_data = {
+"points": PackedVector3Array(0, 0, 0, 0, 0, 0, 26.5, 0.5, -2, 0, 0, 0, 0, 0, 0, 26.5, 2, -2, 0, 0, 0, 0, 0, 0, 27.5, 2, -2),
+"tilts": PackedFloat32Array(0, 0, 0)
+}
+point_count = 3
+
+[sub_resource type="Curve3D" id="Curve3D_Shapes_Curve"]
+_data = {
+"points": PackedVector3Array(0, 0, 0, 0, 0.8, 0, 28.3, 0.5, -2, 0, -0.4, -0.3, 0, 0.4, 0.3, 29, 1.4, -1.4, -0.6, 0, 0, 0, 0, 0, 29.9, 2.2, -2),
+"tilts": PackedFloat32Array(0, 0, 0)
+}
+point_count = 3
+
+[sub_resource type="Curve3D" id="Curve3D_Valve_ValvePipe"]
+_data = {
+"points": PackedVector3Array(0, 0, 0, 0, 0, 0, 31.5, 1.4, -2, 0, 0, 0, 0, 0, 0, 34.5, 1.4, -2),
+"tilts": PackedFloat32Array(0, 0)
+}
+point_count = 2
+
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_furnace"]
+albedo_color = Color(0.2, 0.17, 0.15, 1)
+emission_enabled = true
+emission = Color(1, 0.35, 0.1, 1)
+emission_energy_multiplier = 0.4
+
+[sub_resource type="Curve3D" id="Curve3D_Circuit_FurnaceToCaldarium"]
+_data = {
+"points": PackedVector3Array(0, 0, 0, 0, 0, 0, 37.5, 0.9, -2, 0, 0, 0, 0, 0, 0, 39, 0.9, -2, 0, 0, 0, 0, 0, 0, 39, 0.55, -2),
+"tilts": PackedFloat32Array(0, 0, 0)
+}
+point_count = 3
+
+[sub_resource type="Curve3D" id="Curve3D_Circuit_CaldariumToTepidarium"]
+_data = {
+"points": PackedVector3Array(0, 0, 0, 0, 0, 0, 40.8, 0.45, -2.6, 0, 0, 0, 0, 0, 0, 40.8, 0.9, -2.6, 0, 0, 0, 0, 0, 0, 43, 0.9, -2.6, 0, 0, 0, 0, 0, 0, 43, 0.55, -2.6),
+"tilts": PackedFloat32Array(0, 0, 0, 0)
+}
+point_count = 4
+
+[sub_resource type="Curve3D" id="Curve3D_Circuit_AqueductToFrigidarium"]
+_data = {
+"points": PackedVector3Array(0, 0, 0, 0, 0, 0, 50, 1.6, -2, 0, 0, 0, 0, 0, 0, 47.6, 1.6, -2, 0, 0, 0, 0, 0, 0, 47.6, 0.55, -2),
+"tilts": PackedFloat32Array(0, 0, 0)
+}
+point_count = 3
+
+[node name="PipeDemo" type="Node3D" unique_id=1767022152]
+
+[node name="WorldEnvironment" type="WorldEnvironment" parent="." unique_id=1510757473]
+environment = SubResource("Environment_day")
+
+[node name="Sun" type="DirectionalLight3D" parent="." unique_id=945791691]
+transform = Transform3D(0.8660254, -0.3213938, 0.3830222, 0, 0.7660444, 0.6427876, -0.5, -0.5566704, 0.6634139, 0, 10, 0)
+shadow_enabled = true
+
+[node name="Floor" type="MeshInstance3D" parent="." unique_id=1343937407]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 24, 0, 0)
+mesh = SubResource("PlaneMesh_floor")
+
+[node name="Wall" type="Node3D" parent="." unique_id=568807853]
+
+[node name="Walls" type="Node3D" parent="Wall" unique_id=485145784]
+script = ExtResource("1_scan_collision")
+
+[node name="BackWall" type="MeshInstance3D" parent="Wall/Walls" unique_id=777767189]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1.5, -2)
+mesh = SubResource("BoxMesh_back_wall")
+
+[node name="SideWall" type="MeshInstance3D" parent="Wall/Walls" unique_id=2129367518]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -3.2, 1.5, -0.2)
+mesh = SubResource("BoxMesh_side_wall")
+
+[node name="HotPipe" type="Path3D" parent="Wall" unique_id=1722619173]
+curve = SubResource("Curve3D_Wall_HotPipe")
+script = ExtResource("2_pipe")
+inlet_temperature = 48.0
+outlet_temperature = 41.0
+flow_speed = 0.6
+
+[node name="WarmPipe" type="Path3D" parent="Wall" unique_id=922743782]
+curve = SubResource("Curve3D_Wall_WarmPipe")
+script = ExtResource("2_pipe")
+inlet_temperature = 32.0
+outlet_temperature = 28.0
+flow_speed = 0.35
+
+[node name="ColdPipe" type="Path3D" parent="Wall" unique_id=863895347]
+curve = SubResource("Curve3D_Wall_ColdPipe")
+script = ExtResource("2_pipe")
+radius = 0.04
+inlet_temperature = 14.0
+outlet_temperature = 13.0
+flow_speed = 0.25
+
+[node name="Title" type="Label3D" parent="Wall" unique_id=931082405]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 3.3, -1.7)
+pixel_size = 0.004
+text = "1 · Tuyaux dans les murs (clic droit maintenu pour creuser)"
+font_size = 40
+outline_size = 8
+
+[node name="HotLabel" type="Label3D" parent="Wall" unique_id=20424411]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 2.45, -1.7)
+pixel_size = 0.002
+text = "Eau chaude · 48 → 41 °C · 0,6 m/s"
+font_size = 40
+outline_size = 8
+
+[node name="WarmLabel" type="Label3D" parent="Wall" unique_id=840137470]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1.65, -1.7)
+pixel_size = 0.002
+text = "Eau tiède · 32 → 28 °C · 0,35 m/s"
+font_size = 40
+outline_size = 8
+
+[node name="ColdLabel" type="Label3D" parent="Wall" unique_id=432008071]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.95, -1.7)
+pixel_size = 0.002
+text = "Eau froide · 14 → 13 °C · 0,25 m/s"
+font_size = 40
+outline_size = 8
+
+[node name="Scale" type="Node3D" parent="." unique_id=708391236]
+
+[node name="Pipe10" type="Path3D" parent="Scale" unique_id=422954873]
+curve = SubResource("Curve3D_Scale_Pipe10")
+script = ExtResource("2_pipe")
+radius = 0.07
+inlet_temperature = 10.0
+outlet_temperature = 10.0
+flow_speed = 0.3
+always_visible = true
+
+[node name="Label10" type="Label3D" parent="Scale" unique_id=1166966972]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 9.7, 0.4, -2)
+pixel_size = 0.003
+text = "10 °C"
+font_size = 40
+outline_size = 8
+horizontal_alignment = 0
+
+[node name="Pipe15" type="Path3D" parent="Scale" unique_id=1434904432]
+curve = SubResource("Curve3D_Scale_Pipe15")
+script = ExtResource("2_pipe")
+radius = 0.07
+inlet_temperature = 15.0
+outlet_temperature = 15.0
+flow_speed = 0.3
+always_visible = true
+
+[node name="Label15" type="Label3D" parent="Scale" unique_id=1966147818]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 9.7, 0.7, -2)
+pixel_size = 0.003
+text = "15 °C"
+font_size = 40
+outline_size = 8
+horizontal_alignment = 0
+
+[node name="Pipe20" type="Path3D" parent="Scale" unique_id=1260566129]
+curve = SubResource("Curve3D_Scale_Pipe20")
+script = ExtResource("2_pipe")
+radius = 0.07
+inlet_temperature = 20.0
+outlet_temperature = 20.0
+flow_speed = 0.3
+always_visible = true
+
+[node name="Label20" type="Label3D" parent="Scale" unique_id=2110216187]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 9.7, 1, -2)
+pixel_size = 0.003
+text = "20 °C"
+font_size = 40
+outline_size = 8
+horizontal_alignment = 0
+
+[node name="Pipe25" type="Path3D" parent="Scale" unique_id=588285746]
+curve = SubResource("Curve3D_Scale_Pipe25")
+script = ExtResource("2_pipe")
+radius = 0.07
+inlet_temperature = 25.0
+outlet_temperature = 25.0
+flow_speed = 0.3
+always_visible = true
+
+[node name="Label25" type="Label3D" parent="Scale" unique_id=286417097]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 9.7, 1.3, -2)
+pixel_size = 0.003
+text = "25 °C"
+font_size = 40
+outline_size = 8
+horizontal_alignment = 0
+
+[node name="Pipe30" type="Path3D" parent="Scale" unique_id=1574911089]
+curve = SubResource("Curve3D_Scale_Pipe30")
+script = ExtResource("2_pipe")
+radius = 0.07
+inlet_temperature = 30.0
+outlet_temperature = 30.0
+flow_speed = 0.3
+always_visible = true
+
+[node name="Label30" type="Label3D" parent="Scale" unique_id=75230700]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 9.7, 1.6, -2)
+pixel_size = 0.003
+text = "30 °C"
+font_size = 40
+outline_size = 8
+horizontal_alignment = 0
+
+[node name="Pipe35" type="Path3D" parent="Scale" unique_id=1787780609]
+curve = SubResource("Curve3D_Scale_Pipe35")
+script = ExtResource("2_pipe")
+radius = 0.07
+inlet_temperature = 35.0
+outlet_temperature = 35.0
+flow_speed = 0.3
+always_visible = true
+
+[node name="Label35" type="Label3D" parent="Scale" unique_id=1963390768]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 9.7, 1.9, -2)
+pixel_size = 0.003
+text = "35 °C"
+font_size = 40
+outline_size = 8
+horizontal_alignment = 0
+
+[node name="Pipe40" type="Path3D" parent="Scale" unique_id=453208482]
+curve = SubResource("Curve3D_Scale_Pipe40")
+script = ExtResource("2_pipe")
+radius = 0.07
+outlet_temperature = 40.0
+flow_speed = 0.3
+always_visible = true
+
+[node name="Label40" type="Label3D" parent="Scale" unique_id=1204397393]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 9.7, 2.2, -2)
+pixel_size = 0.003
+text = "40 °C"
+font_size = 40
+outline_size = 8
+horizontal_alignment = 0
+
+[node name="Pipe45" type="Path3D" parent="Scale" unique_id=2131751043]
+curve = SubResource("Curve3D_Scale_Pipe45")
+script = ExtResource("2_pipe")
+radius = 0.07
+inlet_temperature = 45.0
+outlet_temperature = 45.0
+flow_speed = 0.3
+always_visible = true
+
+[node name="Label45" type="Label3D" parent="Scale" unique_id=1454946206]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 9.7, 2.5, -2)
+pixel_size = 0.003
+text = "45 °C"
+font_size = 40
+outline_size = 8
+horizontal_alignment = 0
+
+[node name="Title" type="Label3D" parent="Scale" unique_id=1930476349]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 8.5, 3, -2)
+pixel_size = 0.004
+text = "2 · Échelle des températures"
+font_size = 40
+outline_size = 8
+
+[node name="Speeds" type="Node3D" parent="." unique_id=1576331996]
+
+[node name="Pipe0" type="Path3D" parent="Speeds" unique_id=1849829512]
+curve = SubResource("Curve3D_Speeds_Pipe0")
+script = ExtResource("2_pipe")
+radius = 0.07
+inlet_temperature = 36.0
+outlet_temperature = 36.0
+flow_speed = 0.0
+always_visible = true
+
+[node name="Label0" type="Label3D" parent="Speeds" unique_id=779510040]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 15.7, 0.6, -2)
+pixel_size = 0.003
+text = "0 m/s · eau immobile, sans flèches"
+font_size = 40
+outline_size = 8
+horizontal_alignment = 0
+
+[node name="Pipe1" type="Path3D" parent="Speeds" unique_id=831830313]
+curve = SubResource("Curve3D_Speeds_Pipe1")
+script = ExtResource("2_pipe")
+radius = 0.07
+inlet_temperature = 36.0
+outlet_temperature = 36.0
+flow_speed = 0.2
+always_visible = true
+
+[node name="Label1" type="Label3D" parent="Speeds" unique_id=1198075030]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 15.7, 1.2, -2)
+pixel_size = 0.003
+text = "0,2 m/s"
+font_size = 40
+outline_size = 8
+horizontal_alignment = 0
+
+[node name="Pipe2" type="Path3D" parent="Speeds" unique_id=744630281]
+curve = SubResource("Curve3D_Speeds_Pipe2")
+script = ExtResource("2_pipe")
+radius = 0.07
+inlet_temperature = 36.0
+outlet_temperature = 36.0
+flow_speed = 0.6
+always_visible = true
+
+[node name="Label2" type="Label3D" parent="Speeds" unique_id=1593957247]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 15.7, 1.8, -2)
+pixel_size = 0.003
+text = "0,6 m/s"
+font_size = 40
+outline_size = 8
+horizontal_alignment = 0
+
+[node name="Pipe3" type="Path3D" parent="Speeds" unique_id=1566836672]
+curve = SubResource("Curve3D_Speeds_Pipe3")
+script = ExtResource("2_pipe")
+radius = 0.07
+inlet_temperature = 36.0
+outlet_temperature = 36.0
+flow_speed = 1.5
+always_visible = true
+
+[node name="Label3" type="Label3D" parent="Speeds" unique_id=266046748]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 15.7, 2.4, -2)
+pixel_size = 0.003
+text = "1,5 m/s"
+font_size = 40
+outline_size = 8
+horizontal_alignment = 0
+
+[node name="Title" type="Label3D" parent="Speeds" unique_id=492253574]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 14.5, 3, -2)
+pixel_size = 0.004
+text = "3 · Vitesse du flux"
+font_size = 40
+outline_size = 8
+
+[node name="Cooling" type="Node3D" parent="." unique_id=687001622]
+
+[node name="Serpentine" type="Path3D" parent="Cooling" unique_id=320807611]
+curve = SubResource("Curve3D_Cooling_Serpentine")
+script = ExtResource("2_pipe")
+radius = 0.07
+bend_radius = 0.25
+inlet_temperature = 50.0
+outlet_temperature = 12.0
+flow_speed = 0.5
+always_visible = true
+
+[node name="InletLabel" type="Label3D" parent="Cooling" unique_id=239724164]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 18.3, 2.6, -2)
+pixel_size = 0.003
+text = "entrée · 50 °C"
+font_size = 40
+outline_size = 8
+horizontal_alignment = 2
+
+[node name="OutletLabel" type="Label3D" parent="Cooling" unique_id=1793824055]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 18.3, 0.8, -2)
+pixel_size = 0.003
+text = "sortie · 12 °C"
+font_size = 40
+outline_size = 8
+horizontal_alignment = 2
+
+[node name="Title" type="Label3D" parent="Cooling" unique_id=1698297324]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 20, 3.1, -2)
+pixel_size = 0.004
+text = "4 · Refroidissement le long du tuyau"
+font_size = 40
+outline_size = 8
+
+[node name="Shapes" type="Node3D" parent="." unique_id=474846004]
+
+[node name="ElbowSharp" type="Path3D" parent="Shapes" unique_id=196028769]
+curve = SubResource("Curve3D_Shapes_ElbowSharp")
+script = ExtResource("2_pipe")
+radius = 0.07
+bend_radius = 0.0
+inlet_temperature = 26.0
+outlet_temperature = 24.0
+always_visible = true
+
+[node name="LabelSharp" type="Label3D" parent="Shapes" unique_id=1776579871]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 24, 0.25, -2)
+pixel_size = 0.003
+text = "Coude vif"
+font_size = 40
+outline_size = 8
+
+[node name="ElbowSmall" type="Path3D" parent="Shapes" unique_id=766042591]
+curve = SubResource("Curve3D_Shapes_ElbowSmall")
+script = ExtResource("2_pipe")
+radius = 0.07
+inlet_temperature = 26.0
+outlet_temperature = 24.0
+always_visible = true
+
+[node name="LabelSmall" type="Label3D" parent="Shapes" unique_id=825169988]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 25.5, 0.25, -2)
+pixel_size = 0.003
+text = "Coude 15 cm"
+font_size = 40
+outline_size = 8
+
+[node name="ElbowWide" type="Path3D" parent="Shapes" unique_id=1351458961]
+curve = SubResource("Curve3D_Shapes_ElbowWide")
+script = ExtResource("2_pipe")
+radius = 0.07
+bend_radius = 0.5
+inlet_temperature = 26.0
+outlet_temperature = 24.0
+always_visible = true
+
+[node name="LabelWide" type="Label3D" parent="Shapes" unique_id=686070776]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 27, 0.25, -2)
+pixel_size = 0.003
+text = "Coude 50 cm"
+font_size = 40
+outline_size = 8
+
+[node name="Curve" type="Path3D" parent="Shapes" unique_id=1381069154]
+curve = SubResource("Curve3D_Shapes_Curve")
+script = ExtResource("2_pipe")
+radius = 0.07
+inlet_temperature = 26.0
+outlet_temperature = 24.0
+always_visible = true
+
+[node name="LabelCurve" type="Label3D" parent="Shapes" unique_id=1762595993]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 29.1, 0.25, -2)
+pixel_size = 0.003
+text = "Courbe libre"
+font_size = 40
+outline_size = 8
+
+[node name="Title" type="Label3D" parent="Shapes" unique_id=478697981]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 26.8, 2.8, -2)
+pixel_size = 0.004
+text = "5 · Coudes et courbes"
+font_size = 40
+outline_size = 8
+
+[node name="Valve" type="Node3D" parent="." unique_id=746278321]
+
+[node name="ValvePipe" type="Path3D" parent="Valve" unique_id=1073115746]
+curve = SubResource("Curve3D_Valve_ValvePipe")
+script = ExtResource("2_pipe")
+radius = 0.07
+outlet_temperature = 40.0
+flow_speed = 0.0
+always_visible = true
+
+[node name="SpeedLabel" type="Label3D" parent="Valve" unique_id=2021291598]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 33, 1.75, -2)
+pixel_size = 0.003
+text = "Vanne"
+font_size = 40
+outline_size = 8
+
+[node name="Title" type="Label3D" parent="Valve" unique_id=819383095]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 33, 2.4, -2)
+pixel_size = 0.004
+text = "6 · Vanne (vitesse changée en jeu)"
+font_size = 40
+outline_size = 8
+
+[node name="Controller" type="Node" parent="Valve" unique_id=1530523856 node_paths=PackedStringArray("pipe", "label")]
+script = ExtResource("6_valve")
+pipe = NodePath("../ValvePipe")
+label = NodePath("../SpeedLabel")
+
+[node name="Circuit" type="Node3D" parent="." unique_id=1319196125]
+
+[node name="Basins" type="CSGCombiner3D" parent="Circuit" unique_id=914277493]
+
+[node name="CaldariumRim" type="CSGBox3D" parent="Circuit/Basins" unique_id=588311183]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 39.9, 0.3, -2)
+size = Vector3(2.8, 0.6, 2.2)
+material = SubResource("StandardMaterial3D_stone")
+
+[node name="CaldariumHollow" type="CSGBox3D" parent="Circuit/Basins" unique_id=271287409]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 39.9, 0.4, -2)
+operation = 2
+size = Vector3(2.4, 0.6, 1.8)
+material = SubResource("StandardMaterial3D_stone")
+
+[node name="TepidariumRim" type="CSGBox3D" parent="Circuit/Basins" unique_id=1855055430]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 43.5, 0.3, -2)
+size = Vector3(2.8, 0.6, 2.2)
+material = SubResource("StandardMaterial3D_stone")
+
+[node name="TepidariumHollow" type="CSGBox3D" parent="Circuit/Basins" unique_id=141307951]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 43.5, 0.4, -2)
+operation = 2
+size = Vector3(2.4, 0.6, 1.8)
+material = SubResource("StandardMaterial3D_stone")
+
+[node name="FrigidariumRim" type="CSGBox3D" parent="Circuit/Basins" unique_id=1198825875]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 47.1, 0.3, -2)
+size = Vector3(2.8, 0.6, 2.2)
+material = SubResource("StandardMaterial3D_stone")
+
+[node name="FrigidariumHollow" type="CSGBox3D" parent="Circuit/Basins" unique_id=1931958089]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 47.1, 0.4, -2)
+operation = 2
+size = Vector3(2.4, 0.6, 1.8)
+material = SubResource("StandardMaterial3D_stone")
+
+[node name="CaldariumWater" type="Node3D" parent="Circuit" unique_id=1950972269]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 39.9, 0.5, -2)
+script = ExtResource("7_water_volume")
+size = Vector3(2.4, 0.4, 1.8)
+
+[node name="TepidariumWater" type="Node3D" parent="Circuit" unique_id=1134000364]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 43.5, 0.5, -2)
+script = ExtResource("7_water_volume")
+size = Vector3(2.4, 0.4, 1.8)
+
+[node name="FrigidariumWater" type="Node3D" parent="Circuit" unique_id=260539720]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 47.1, 0.5, -2)
+script = ExtResource("7_water_volume")
+size = Vector3(2.4, 0.4, 1.8)
+
+[node name="Furnace" type="CSGBox3D" parent="Circuit" unique_id=2101298341]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 37, 0.6, -2)
+size = Vector3(1, 1.2, 1)
+material = SubResource("StandardMaterial3D_furnace")
+
+[node name="FurnaceGlow" type="OmniLight3D" parent="Circuit" unique_id=49022836]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 37, 0.5, -1.3)
+light_color = Color(1, 0.45, 0.15, 1)
+light_energy = 2.0
+omni_range = 2.0
+
+[node name="FurnaceToCaldarium" type="Path3D" parent="Circuit" unique_id=1789714925]
+curve = SubResource("Curve3D_Circuit_FurnaceToCaldarium")
+script = ExtResource("2_pipe")
+radius = 0.07
+inlet_temperature = 55.0
+outlet_temperature = 48.0
+flow_speed = 0.5
+always_visible = true
+
+[node name="CaldariumToTepidarium" type="Path3D" parent="Circuit" unique_id=387335158]
+curve = SubResource("Curve3D_Circuit_CaldariumToTepidarium")
+script = ExtResource("2_pipe")
+radius = 0.07
+outlet_temperature = 33.0
+flow_speed = 0.3
+always_visible = true
+
+[node name="AqueductToFrigidarium" type="Path3D" parent="Circuit" unique_id=347338274]
+curve = SubResource("Curve3D_Circuit_AqueductToFrigidarium")
+script = ExtResource("2_pipe")
+radius = 0.07
+inlet_temperature = 13.0
+outlet_temperature = 12.0
+flow_speed = 0.8
+always_visible = true
+
+[node name="FurnaceLabel" type="Label3D" parent="Circuit" unique_id=787349260]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 37, 1.6, -2)
+pixel_size = 0.003
+text = "Praefurnium (foyer)"
+font_size = 40
+outline_size = 8
+
+[node name="CaldariumLabel" type="Label3D" parent="Circuit" unique_id=700525490]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 39.9, 1.4, -2)
+pixel_size = 0.003
+text = "Caldarium · ~40 °C"
+font_size = 40
+outline_size = 8
+
+[node name="TepidariumLabel" type="Label3D" parent="Circuit" unique_id=1205928886]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 43.5, 1.4, -2)
+pixel_size = 0.003
+text = "Tepidarium · ~30 °C"
+font_size = 40
+outline_size = 8
+
+[node name="FrigidariumLabel" type="Label3D" parent="Circuit" unique_id=925422332]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 47.1, 1.4, -2)
+pixel_size = 0.003
+text = "Frigidarium · ~12 °C"
+font_size = 40
+outline_size = 8
+
+[node name="AqueductLabel" type="Label3D" parent="Circuit" unique_id=1041950732]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 50, 1.9, -2)
+pixel_size = 0.003
+text = "Aqueduc"
+font_size = 40
+outline_size = 8
+
+[node name="Title" type="Label3D" parent="Circuit" unique_id=1753773081]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 43.5, 2.4, -2)
+pixel_size = 0.004
+text = "7 · Circuit des thermes"
+font_size = 40
+outline_size = 8
+
+[node name="View1" type="Marker3D" parent="." unique_id=2137664227]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1.4, -2)
+
+[node name="View2" type="Marker3D" parent="." unique_id=1489264221]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 8.5, 1.45, -2)
+
+[node name="View3" type="Marker3D" parent="." unique_id=1980418041]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 14.5, 1.5, -2)
+
+[node name="View4" type="Marker3D" parent="." unique_id=652414982]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 20, 1.7, -2)
+
+[node name="View5" type="Marker3D" parent="." unique_id=1622946102]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 26.8, 1.3, -2)
+
+[node name="View6" type="Marker3D" parent="." unique_id=432809454]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 33, 1.5, -2)
+
+[node name="View7" type="Marker3D" parent="." unique_id=1737506349]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 43.5, 0.9, -2)
+
+[node name="Camera" type="Camera3D" parent="." unique_id=1205951261 node_paths=PackedStringArray("focus_points")]
+script = ExtResource("3_camera")
+focus_points = [NodePath("../View1"), NodePath("../View2"), NodePath("../View3"), NodePath("../View4"), NodePath("../View5"), NodePath("../View6"), NodePath("../View7")]
+distance = 5.0
+
+[node name="MouseHand" type="Node3D" parent="." unique_id=460160863 node_paths=PackedStringArray("camera")]
+script = ExtResource("4_hand")
+camera = NodePath("../Camera")
+
+[node name="HandDissolve" type="Node" parent="." unique_id=172137249 node_paths=PackedStringArray("scan", "camera", "left_hand")]
+script = ExtResource("5_dissolve")
+scan = NodePath("../Wall/Walls")
+camera = NodePath("../Camera")
+left_hand = NodePath("../MouseHand")
+spread_speed = 0.5
+max_radius = 0.6
+
+[node name="Help" type="CanvasLayer" parent="." unique_id=1081730504]
+
+[node name="Label" type="Label" parent="Help" unique_id=1642586496]
+offset_left = 16.0
+offset_top = 16.0
+theme_override_colors/font_outline_color = Color(0, 0, 0, 1)
+theme_override_constants/outline_size = 6
+text = "1 à 7 : changer de poste · Clic gauche + glisser : tourner · Molette : zoom · Clic droit maintenu sur le mur (poste 1) : creuser"
