@@ -11,6 +11,20 @@ Au lancement, le joueur arrive dans une salle d'accueil (`scenes/navigation/room
 - **Tests** : la propriété `skip_to` de la salle d'accueil permet de sauter le choix. Sur PC, les touches 1 et 2 envoient dans chaque salle.
 - L'écran est un `XRToolsViewport2DIn3D` qui affiche la scène 2D `room_menu.tscn`. Chaque main porte un `XRToolsFunctionPointer`.
 
+
+## Nuages de vapeur
+
+De la vapeur s'élève au-dessus de l'eau des bassins. Quand on passe la main dedans, elle est repoussée.
+
+- **ON/OFF** : `Interactions.steam` dans `autoload/interactions.gd`.
+- **Ajouter de la vapeur sur un bassin** : instancier `scenes/effects/steam/steam_clouds.tscn` comme enfant d'un `WaterVolume`. L'effet prend automatiquement la taille de l'eau. Renseigner `left_hand` et `right_hand` avec les `XRController3D` pour que les mains repoussent la vapeur.
+- **Réglages** :
+  - dans le script : `clouds_per_square_meter` (quantité), `hand_radius` et `hand_push` (effet des mains) ;
+  - dans le matériau `steam.gdshader` : `density` (opacité), `color`, `wisp_scale` et `wisp_speed` (volutes), `near_fade_start` et `near_fade_end` (fondu près de la tête) ;
+  - dans le `ParticleProcessMaterial` : vitesse de montée, durée de vie, taille.
+- Les mains repoussent la vapeur grâce à un `GPUParticlesAttractorSphere3D` de force négative, ajouté sur chaque manette au lancement.
+
+
 ## Tuyaux
 
 Les tuyaux (`Pipe`, `scenes/effects/pipe.gd`) montrent comment l'eau circule dans les thermes. Ils sont cachés dans les murs et n'apparaissent que dans les trous creusés avec la main (`HandDissolve`). L'eau y prend la couleur de sa température (bleu froid → rouge chaud) et des flèches de la même couleur avancent avec le flux.

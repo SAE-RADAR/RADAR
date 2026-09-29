@@ -1,7 +1,7 @@
 [gd_scene format=3 uid="uid://k7dnmh53j5yy"]
 
 [ext_resource type="Script" uid="uid://vk4t5647rqi" path="res://scenes/navigation/room_choice/welcome_room.gd" id="1_room"]
-[ext_resource type="PackedScene" path="res://scenes/navigation/room_choice/room_menu.tscn" id="2_menu"]
+[ext_resource type="PackedScene" uid="uid://dtpex25d4ev3k" path="res://scenes/navigation/room_choice/room_menu.tscn" id="2_menu"]
 [ext_resource type="PackedScene" uid="uid://clc5dre31iskm" path="res://addons/godot-xr-tools/xr/start_xr.tscn" id="3_startxr"]
 [ext_resource type="PackedScene" uid="uid://diyu06cw06syv" path="res://addons/godot-xr-tools/player/player_body.tscn" id="4_body"]
 [ext_resource type="PackedScene" uid="uid://b4kad2kuba1yn" path="res://addons/godot-xr-tools/hands/scenes/lowpoly/left_hand_low.tscn" id="5_lhand"]

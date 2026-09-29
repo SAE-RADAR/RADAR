@@ -1,6 +1,6 @@
-[gd_scene format=3]
+[gd_scene format=3 uid="uid://dtpex25d4ev3k"]
 
-[ext_resource type="Script" path="res://scenes/navigation/room_choice/room_menu.gd" id="1_menu"]
+[ext_resource type="Script" uid="uid://ctgoglgryxts5" path="res://scenes/navigation/room_choice/room_menu.gd" id="1_menu"]
 
 [sub_resource type="Theme" id="Theme_menu"]
 default_font_size = 44
@@ -12,7 +12,7 @@ corner_radius_top_right = 24
 corner_radius_bottom_right = 24
 corner_radius_bottom_left = 24
 
-[node name="RoomMenu" type="PanelContainer"]
+[node name="RoomMenu" type="PanelContainer" unique_id=135228813]
 anchors_preset = 15
 anchor_right = 1.0
 anchor_bottom = 1.0
@@ -22,24 +22,24 @@ theme = SubResource("Theme_menu")
 theme_override_styles/panel = SubResource("StyleBox_panel")
 script = ExtResource("1_menu")
 
-[node name="Margin" type="MarginContainer" parent="."]
+[node name="Margin" type="MarginContainer" parent="." unique_id=2045672847]
 layout_mode = 2
 theme_override_constants/margin_left = 48
 theme_override_constants/margin_top = 40
 theme_override_constants/margin_right = 48
 theme_override_constants/margin_bottom = 48
 
-[node name="Content" type="VBoxContainer" parent="Margin"]
+[node name="Content" type="VBoxContainer" parent="Margin" unique_id=1226556927]
 layout_mode = 2
 theme_override_constants/separation = 40
 
-[node name="Title" type="Label" parent="Margin/Content"]
+[node name="Title" type="Label" parent="Margin/Content" unique_id=1730032628]
 layout_mode = 2
 theme_override_font_sizes/font_size = 56
 text = "Choisissez une salle"
 horizontal_alignment = 1
 
-[node name="Buttons" type="HBoxContainer" parent="Margin/Content"]
+[node name="Buttons" type="HBoxContainer" parent="Margin/Content" unique_id=997243721]
 unique_name_in_owner = true
 layout_mode = 2
 size_flags_vertical = 3
