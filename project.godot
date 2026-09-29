@@ -21,6 +21,7 @@ XRToolsUserSettings="*uid://bqgb8i74tm0t"
 XRToolsRumbleManager="*uid://by853dk86g1qw"
 Interactions="*res://autoload/interactions.gd"
 Rooms="*res://scenes/navigation/room_choice/rooms.gd"
+HandGestures="*res://scenes/navigation/hand_gestures/hand_gestures.gd"
 
 [display]
 
@@ -91,6 +92,8 @@ META_ENVIRONMENT_DEPTH_TO_CAMERA_PROJECTION_RIGHT={
 [xr]
 
 openxr/enabled=true
+openxr/extensions/hand_tracking=true
+openxr/extensions/hand_interaction_profile=true
 openxr/extensions/spatial_entity/enabled=true
 openxr/extensions/spatial_entity/enable_spatial_anchors=true
 openxr/extensions/spatial_entity/enable_persistent_anchors=true
@@ -111,7 +114,6 @@ openxr/extensions/meta/anchor_sharing=true
 openxr/extensions/meta/scene_api=true
 openxr/extensions/meta/headset_id=true
 openxr/extensions/meta/colocation_discovery=true
-openxr/extensions/meta/application_space_warp=false
 openxr/extensions/meta/environment_depth=true
 openxr/extensions/androidxr/light_estimation=true
 openxr/extensions/androidxr/passthrough_camera_state=true

@@ -87,6 +87,7 @@ pose = &"aim"
 
 [node name="FunctionTeleport" parent="XROrigin3D/RightController" unique_id=374681196 instance=ExtResource("7_teleport")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.02, -0.05, 0)
+teleport_button_action = "gesture_select"
 
 [node name="PlayerBody" parent="XROrigin3D" unique_id=1658016560 instance=ExtResource("4_body")]
 

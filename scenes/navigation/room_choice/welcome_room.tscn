@@ -60,6 +60,7 @@ pose = &"aim"
 [node name="LeftHand" parent="XROrigin3D/LeftController" unique_id=624670511 instance=ExtResource("5_lhand")]
 
 [node name="FunctionPointer" parent="XROrigin3D/LeftController" unique_id=452723120 instance=ExtResource("8_pointer")]
+active_button_action = "gesture_select"
 
 [node name="RightController" type="XRController3D" parent="XROrigin3D" unique_id=1824899768]
 tracker = &"right_hand"
@@ -68,6 +69,7 @@ pose = &"aim"
 [node name="RightHand" parent="XROrigin3D/RightController" unique_id=1266000761 instance=ExtResource("6_rhand")]
 
 [node name="FunctionPointer" parent="XROrigin3D/RightController" unique_id=186863541 instance=ExtResource("8_pointer")]
+active_button_action = "gesture_select"
 
 [node name="PlayerBody" parent="XROrigin3D" unique_id=1426168353 instance=ExtResource("4_body")]
 

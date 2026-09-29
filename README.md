@@ -23,3 +23,17 @@ De la vapeur s'élève au-dessus de l'eau des bassins. Quand on passe la main de
   - dans le matériau `steam.gdshader` : `density` (opacité), `color`, `wisp_scale` et `wisp_speed` (volutes), `near_fade_start` et `near_fade_end` (fondu près de la tête) ;
   - dans le `ParticleProcessMaterial` : vitesse de montée, durée de vie, taille.
 - Les mains repoussent la vapeur grâce à un `GPUParticlesAttractorSphere3D` de force négative, ajouté sur chaque manette au lancement.
+
+
+## Contrôle avec les mains
+
+L'application se contrôle sans manettes, avec le suivi des mains du Quest.
+
+- **Se téléporter** : pincer le pouce et l'index de la main droite et garder le pincement, viser avec la main, puis relâcher. Fermer le poing pendant qu'on vise annule la téléportation.
+- **Choisir une salle** : viser le bouton avec le rayon de la main, puis pincer.
+- Le geste est détecté par l'autoload `HandGestures` (`scenes/navigation/hand_gestures/hand_gestures.gd`). Il crée une action virtuelle `gesture_select` sur chaque main :
+  - avec une manette, elle recopie la gâchette ;
+  - avec la main, elle n'est pressée que pour un vrai pincement : index loin de la paume (pas un poing), main vue ouverte avant, pincement tenu 0,15 s.
+- Les fonctions XR Tools qui doivent réagir au geste utilisent `gesture_select` comme action : `teleport_button_action` pour la téléportation, `active_button_action` pour le pointeur.
+- Réglages dans `hand_gestures.gd` : `pinch_start` et `pinch_end` (distance pouce-index), `min_index_to_palm`, `hold_time`, `open_time`. Avec `debug = true`, les distances mesurées s'affichent dans le journal du casque (`adb logcat`).
+- Nécessite `xr/openxr/extensions/hand_tracking` et `hand_interaction_profile` activés dans les paramètres du projet.
