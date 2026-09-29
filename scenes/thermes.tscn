@@ -20,6 +20,7 @@
 [ext_resource type="Script" uid="uid://c0s34emgvtxg2" path="res://scenes/ui/info_box.gd" id="15_infobox"]
 [ext_resource type="Resource" uid="uid://b8raoxx53xed7" path="res://scenes/ui/thermes_bassin_info.tres" id="16_info"]
 [ext_resource type="PackedScene" path="res://scenes/effects/fireflies.tscn" id="17_aeurs"]
+[ext_resource type="PackedScene" path="res://scenes/effects/steam/steam_clouds.tscn" id="18_steam"]
 [ext_resource type="Script" uid="uid://cwgv60m02vinv" path="res://scenes/effects/cascade.gd" id="20_iti14"]
 
 [sub_resource type="Curve3D" id="Curve3D_icq5y"]
@@ -109,6 +110,10 @@ curve = SubResource("Curve3D_icq5y")
 script = ExtResource("5_h0hxb")
 metadata/_custom_type_script = "uid://c7gf0s7t7g5xs"
 
+[node name="SteamClouds" parent="Thermes vestiges/WaterVolume" node_paths=PackedStringArray("left_hand", "right_hand") instance=ExtResource("18_steam")]
+left_hand = NodePath("../../../XROrigin3D/LeftController")
+right_hand = NodePath("../../../XROrigin3D/RightController")
+
 [node name="XRToolsStartXR" type="Node" parent="." unique_id=1586718985]
 script = ExtResource("2_ydk6e")
 metadata/_custom_type_script = "uid://ces1j6plojyra"
@@ -193,7 +198,7 @@ gaze_radius = 1.0
 [node name="Cascade" type="Node3D" parent="." unique_id=1291325511]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 2.9865043, 5.444454, 4.0798793)
 script = ExtResource("20_iti14")
-height = 5.85
+height = 4.25
 metadata/_custom_type_script = "uid://cwgv60m02vinv"
 
 [connection signal="body_entered" from="SoundZone_Water" to="SoundZone_Water" method="_on_body_entered"]

@@ -1,3 +1,8 @@
 # Godot 4+ specific ignores
 .godot/
 /android/
+
+# Temporary files: Windows' copies of DLLs replaced while in use, and scenes
+# Godot was saving
+~*.TMP
+*.tmp
