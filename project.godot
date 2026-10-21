@@ -20,6 +20,7 @@ config/icon="res://icon.svg"
 XRToolsUserSettings="*uid://bqgb8i74tm0t"
 XRToolsRumbleManager="*uid://by853dk86g1qw"
 Interactions="*res://autoload/interactions.gd"
+AppMode="*res://autoload/app_mode.gd"
 Rooms="*res://scenes/navigation/room_choice/rooms.gd"
 
 [display]
@@ -50,6 +51,10 @@ DISSOLVE_SOURCE_0={
 DISSOLVE_SOURCE_1={
 "type": "vec4",
 "value": Vector4(0, 0, 0, 0)
+}
+PASSTHROUGH={
+"type": "bool",
+"value": false
 }
 META_ENVIRONMENT_DEPTH_AVAILABLE={
 "type": "bool",
@@ -119,7 +124,6 @@ openxr/extensions/meta/anchor_sharing=true
 openxr/extensions/meta/scene_api=true
 openxr/extensions/meta/headset_id=true
 openxr/extensions/meta/colocation_discovery=true
-openxr/extensions/meta/application_space_warp=false
 openxr/extensions/meta/environment_depth=true
 openxr/extensions/androidxr/light_estimation=true
 openxr/extensions/androidxr/passthrough_camera_state=true

@@ -1,3 +1,4 @@
+class_name HandDissolve
 extends Node
 
 ## Dissolves the scan outward from where a hand goes through it, and rebuilds
@@ -10,8 +11,15 @@ extends Node
 ## DISSOLVE_SOURCE_0 and DISSOLVE_SOURCE_1 (xyz = origin, w = radius, 0 when
 ## that hand isn't through), for what the scan hides, like [Pipe]s, to show in
 ## the holes.
+##
+## In AR ([member mask_mode], set by [ARSession]) the scan isn't drawn over
+## passthrough: it becomes an invisible mask hiding what the real walls hide,
+## and the holes open in that mask.
 
 const DissolveShader := preload("res://scenes/world/scan_dissolve.gdshader")
+const MaskShader := preload("res://scenes/world/scan_mask.gdshader")
+const MaskClearShader := preload("res://scenes/world/scan_mask_clear.gdshader")
+const MaskOverlayShader := preload("res://scenes/world/scan_mask_overlay.gdshader")
 const SOURCE_GLOBALS: Array[StringName] = [&"DISSOLVE_SOURCE_0", &"DISSOLVE_SOURCE_1"]
 
 ## Node holding the scanned meshes to dissolve.
@@ -39,7 +47,18 @@ const SOURCE_GLOBALS: Array[StringName] = [&"DISSOLVE_SOURCE_0", &"DISSOLVE_SOUR
 ## Furthest the dissolve spreads, in meters; 0 means the whole scan.
 @export var max_radius := 0.0
 
+## AR: draws the scan as an invisible mask over passthrough (scan_mask.gdshader
+## and its next passes) instead of drawing it.
+var mask_mode := false
+
+## AR: opacity the scan is drawn with over passthrough, to check how it lines
+## up with the real walls; 0 hides it.
+var mask_preview := 0.0
+
 var _material := ShaderMaterial.new()
+var _mask_material := ShaderMaterial.new()
+var _mask_clear_material := ShaderMaterial.new()
+var _mask_overlay_material := ShaderMaterial.new()
 var _meshes: Array[MeshInstance3D] = []
 var _origins: Array[Vector3] = [Vector3.ZERO, Vector3.ZERO]
 var _radii: Array[float] = [0.0, 0.0]
@@ -51,6 +70,13 @@ var _reach := 0.0
 
 func _ready() -> void:
 	_material.shader = DissolveShader
+	_mask_material.shader = MaskShader
+	_mask_clear_material.shader = MaskClearShader
+	_mask_overlay_material.shader = MaskOverlayShader
+	_mask_material.next_pass = _mask_clear_material
+	# The clear runs before any other transparent pass, the overlay right after.
+	_mask_clear_material.render_priority = Material.RENDER_PRIORITY_MIN
+	_mask_overlay_material.render_priority = Material.RENDER_PRIORITY_MIN + 1
 	# Only the scan's own meshes: nodes built at runtime under it, like a
 	# WaterVolume's surface, have no owner and keep their own material.
 	for mesh_instance: MeshInstance3D in scan.find_children("*", "MeshInstance3D", true, true):
@@ -62,6 +88,7 @@ func _ready() -> void:
 		var original := _meshes[0].get_active_material(0) as BaseMaterial3D
 		if original:
 			_material.set_shader_parameter("albedo_texture", original.albedo_texture)
+			_mask_overlay_material.set_shader_parameter("albedo_texture", original.albedo_texture)
 	if max_radius <= 0.0:
 		max_radius = _reach
 
@@ -87,14 +114,25 @@ func _physics_process(delta: float) -> void:
 			_radii[i] = minf(_radii[i] + spread_speed * delta, max_radius)
 
 	var active := _radii[0] > 0.0 or _radii[1] > 0.0
-	if active:
-		_material.set_shader_parameter("sources", PackedVector4Array([
-			Vector4(_origins[0].x, _origins[0].y, _origins[0].z, _radii[0]),
-			Vector4(_origins[1].x, _origins[1].y, _origins[1].z, _radii[1]),
-		]))
+	var sources := PackedVector4Array([
+		Vector4(_origins[0].x, _origins[0].y, _origins[0].z, _radii[0]),
+		Vector4(_origins[1].x, _origins[1].y, _origins[1].z, _radii[1]),
+	])
+	var override: Material = null
+	if mask_mode:
+		override = _mask_material
+		for material: ShaderMaterial in [_mask_material, _mask_clear_material, _mask_overlay_material]:
+			material.set_shader_parameter("sources", sources)
+		_mask_overlay_material.set_shader_parameter("preview_opacity", mask_preview)
+		# The overlay is another pass over the whole scan: only add it when
+		# there is something to draw.
+		_mask_clear_material.next_pass = _mask_overlay_material if active or mask_preview > 0.0 else null
+	elif active:
+		override = _material
+		_material.set_shader_parameter("sources", sources)
 	# Only pay for the dissolve shader while something is dissolving.
 	for mesh_instance in _meshes:
-		mesh_instance.material_override = _material if active else null
+		mesh_instance.material_override = override
 	for i in SOURCE_GLOBALS.size():
 		RenderingServer.global_shader_parameter_set(SOURCE_GLOBALS[i],
 				Vector4(_origins[i].x, _origins[i].y, _origins[i].z, _radii[i]))
