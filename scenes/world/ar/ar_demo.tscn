@@ -1,0 +1,106 @@
+[gd_scene format=3]
+
+[ext_resource type="Script" path="res://scenes/world/ar/ar_demo.gd" id="1_demo"]
+[ext_resource type="PackedScene" uid="uid://dqvpqa7g11b1v" path="res://assets/thermes/models/Thermes vestiges.fbx" id="2_scan"]
+[ext_resource type="Shader" path="res://scenes/world/ar/ar_demo_feed.gdshader" id="3_feed"]
+[ext_resource type="Shader" path="res://scenes/world/ar/ar_demo_checker.gdshader" id="4_checker"]
+
+[sub_resource type="ShaderMaterial" id="Material_feed"]
+shader = ExtResource("3_feed")
+
+[sub_resource type="ShaderMaterial" id="Material_checker"]
+shader = ExtResource("4_checker")
+
+[sub_resource type="Environment" id="Environment_reality"]
+background_mode = 1
+background_color = Color(0.55, 0.6, 0.66, 1)
+ambient_light_source = 2
+ambient_light_color = Color(1, 1, 1, 1)
+reflected_light_source = 1
+
+[sub_resource type="StyleBoxFlat" id="StyleBox_help"]
+content_margin_left = 16.0
+content_margin_top = 12.0
+content_margin_right = 16.0
+content_margin_bottom = 12.0
+bg_color = Color(0, 0, 0, 0.65)
+corner_radius_top_left = 8
+corner_radius_top_right = 8
+corner_radius_bottom_right = 8
+corner_radius_bottom_left = 8
+
+[node name="ARDemo" type="Control"]
+layout_mode = 3
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+script = ExtResource("1_demo")
+
+[node name="Reality" type="SubViewportContainer" parent="."]
+unique_name_in_owner = true
+material = SubResource("Material_feed")
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+mouse_filter = 2
+stretch = true
+
+[node name="RealityViewport" type="SubViewport" parent="Reality"]
+own_world_3d = true
+handle_input_locally = false
+size = Vector2i(1152, 648)
+
+[node name="WorldEnvironment" type="WorldEnvironment" parent="Reality/RealityViewport"]
+environment = SubResource("Environment_reality")
+
+[node name="RealScan" parent="Reality/RealityViewport" instance=ExtResource("2_scan")]
+unique_name_in_owner = true
+
+[node name="Code" type="MeshInstance3D" parent="Reality/RealityViewport"]
+unique_name_in_owner = true
+
+[node name="RealityCamera" type="Camera3D" parent="Reality/RealityViewport"]
+unique_name_in_owner = true
+current = true
+
+[node name="Checker" type="ColorRect" parent="."]
+unique_name_in_owner = true
+visible = false
+material = SubResource("Material_checker")
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+mouse_filter = 2
+
+[node name="AR" type="SubViewportContainer" parent="."]
+unique_name_in_owner = true
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+stretch = true
+
+[node name="ARViewport" type="SubViewport" parent="AR"]
+unique_name_in_owner = true
+own_world_3d = true
+transparent_bg = true
+handle_input_locally = false
+size = Vector2i(1152, 648)
+
+[node name="Help" type="Label" parent="."]
+unique_name_in_owner = true
+layout_mode = 0
+offset_left = 16.0
+offset_top = 16.0
+theme_override_font_sizes/font_size = 17
+theme_override_styles/normal = SubResource("StyleBox_help")

@@ -9,6 +9,9 @@ const SCENES := {
 }
 
 const DEFAULT_ROOM := "thermes"
+## Rooms that can run in AR: their scene has an ARSession and QR markers placed
+## where the codes are stuck on the real site.
+const AR_ROOMS: Array[String] = ["thermes"]
 const FADE_DURATION := 0.3
 const PLACEMENT_FRAMES := 4
 

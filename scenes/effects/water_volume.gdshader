@@ -16,6 +16,11 @@ render_mode world_vertex_coords, cull_disabled, depth_draw_always, shadows_disab
 uniform sampler2D screen_texture : hint_screen_texture, filter_linear, repeat_disable;
 uniform sampler2D depth_texture : hint_depth_texture, filter_nearest, repeat_disable;
 
+// Set by ARSession in AR. The real world seen through passthrough isn't in the
+// screen texture, so there's nothing to refract: the water is drawn as a tint
+// over it instead, as opaque as the water it looks through is deep.
+global uniform bool PASSTHROUGH;
+
 group_uniforms water;
 // Share of light kept per meter travelled through the water, per channel.
 uniform vec3 absorption_color : source_color = vec3(0.45, 0.78, 0.8);
@@ -62,6 +67,12 @@ uniform float shore_depth : hint_range(0.01, 1.0, 0.01) = 0.1;
 uniform vec3 foam_color : source_color = vec3(1.0);
 uniform sampler2D foam_a : filter_linear_mipmap;
 uniform sampler2D foam_b : filter_linear_mipmap;
+
+group_uniforms passthrough;
+// Color of the water over passthrough (AR), where it can't show what is under it.
+uniform vec3 passthrough_color : source_color = vec3(0.08, 0.26, 0.28);
+// Least opacity of the water over passthrough, so even the shallows show.
+uniform float passthrough_min_opacity : hint_range(0.0, 1.0, 0.01) = 0.2;
 
 group_uniforms fallback;
 // Distance seen through the water where the depth texture can't be read (it
@@ -253,6 +264,17 @@ vec3 reflected_color(vec3 vertex, vec3 normal, mat4 projection, mat4 inv_project
 }
 
 
+// Over passthrough: opacity of the water seen through the surface, from how
+// much light it absorbs on the way to the scene behind.
+float passthrough_opacity(vec3 vertex, mat4 inv_projection, vec2 screen_uv) {
+	vec3 scene = scene_position(screen_uv, inv_projection);
+	float water_distance = has_depth(scene, vertex) ? distance(scene, vertex) : fallback_water_distance;
+	vec3 transmitted = pow(absorption_color, vec3(min(water_distance, MAX_WATER_DISTANCE) * absorption_strength));
+	float opacity = 1.0 - (transmitted.r + transmitted.g + transmitted.b) / 3.0;
+	return max(opacity, passthrough_min_opacity);
+}
+
+
 void fragment() {
 	vec3 flat_normal = NORMAL;
 	// Back faces get a flipped normal but not flipped tangents.
@@ -268,21 +290,29 @@ void fragment() {
 
 	if (FRONT_FACING) {
 		float reflectance = fresnel(dot(NORMAL, VIEW));
-		EMISSION = refracted_color(VERTEX, NORMAL, flat_normal, SCREEN_UV, VIEWPORT_SIZE, false, PROJECTION_MATRIX, INV_PROJECTION_MATRIX) * (1.0 - reflectance);
-		vec3 reflection = reflected_color(VERTEX, NORMAL, PROJECTION_MATRIX, INV_PROJECTION_MATRIX, found);
-		EMISSION += reflection * reflectance * found;
-		// The engine's reflections fill in where the screen has nothing.
-		SPECULAR = 0.5 * (1.0 - found);
+		if (PASSTHROUGH) {
+			// No screen to refract or reflect: the engine's reflections only.
+			EMISSION = passthrough_color * (1.0 - reflectance);
+			ALPHA = clamp(passthrough_opacity(VERTEX, INV_PROJECTION_MATRIX, SCREEN_UV) + reflectance, 0.0, 1.0);
+			SPECULAR = 0.5;
+		} else {
+			EMISSION = refracted_color(VERTEX, NORMAL, flat_normal, SCREEN_UV, VIEWPORT_SIZE, false, PROJECTION_MATRIX, INV_PROJECTION_MATRIX) * (1.0 - reflectance);
+			vec3 reflection = reflected_color(VERTEX, NORMAL, PROJECTION_MATRIX, INV_PROJECTION_MATRIX, found);
+			EMISSION += reflection * reflectance * found;
+			// The engine's reflections fill in where the screen has nothing.
+			SPECULAR = 0.5 * (1.0 - found);
+		}
 
 		vec3 scene = scene_position(SCREEN_UV, INV_PROJECTION_MATRIX);
 		if (shore_mode != 2 && has_depth(scene, VERTEX)) {
 			float scene_height = (INV_VIEW_MATRIX * vec4(scene, 1.0)).y;
 			float shallowness = clamp((world_position.y - scene_height) / shore_depth, 0.0, 1.0);
 			if (shore_mode == 1) {
-				ALPHA = shallowness;
+				ALPHA *= shallowness;
 			} else {
 				float foam = mix(texture(foam_a, UV).r, texture(foam_b, UV2).r, wave_mix);
 				if (foam > shallowness) {
+					ALPHA = 1.0;
 					ALBEDO = foam_color;
 					ROUGHNESS = 1.0;
 					SPECULAR = 0.5;
@@ -298,10 +328,19 @@ void fragment() {
 		float transmission = 0.0;
 		if (dot(transmitted, transmitted) > 0.0) {
 			transmission = 1.0 - fresnel(dot(transmitted, -NORMAL));
-			EMISSION = refracted_color(VERTEX, NORMAL, flat_normal, SCREEN_UV, VIEWPORT_SIZE, true, PROJECTION_MATRIX, INV_PROJECTION_MATRIX) * transmission;
+			if (!PASSTHROUGH) {
+				EMISSION = refracted_color(VERTEX, NORMAL, flat_normal, SCREEN_UV, VIEWPORT_SIZE, true, PROJECTION_MATRIX, INV_PROJECTION_MATRIX) * transmission;
+			}
 		}
-		vec3 reflection = reflected_color(VERTEX, NORMAL, PROJECTION_MATRIX, INV_PROJECTION_MATRIX, found);
-		EMISSION += reflection * found * (1.0 - transmission);
+		if (PASSTHROUGH) {
+			// Standing in a real, empty basin: see the world above through
+			// the surface, tinted, and a mirror past the critical angle.
+			EMISSION = passthrough_color;
+			ALPHA = mix(1.0, passthrough_min_opacity, transmission);
+		} else {
+			vec3 reflection = reflected_color(VERTEX, NORMAL, PROJECTION_MATRIX, INV_PROJECTION_MATRIX, found);
+			EMISSION += reflection * found * (1.0 - transmission);
+		}
 		// The engine would reflect the sky, which can't be seen from below.
 		SPECULAR = 0.0;
 	}

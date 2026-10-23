@@ -4,7 +4,11 @@ shader_type spatial;
 // Each firefly blinks on its own rhythm with a dim glow in between, fades in
 // and out over its life, and glows steadily while gathered in a swarm
 // (CUSTOM data from fireflies_process.gdshader).
-render_mode unshaded, blend_add, depth_draw_never, cull_disabled, shadows_disabled, fog_disabled;
+//
+// Added to what is behind, through premultiplied alpha with no alpha: the same
+// as blend_add, except blend_add also writes alpha, which over passthrough (AR)
+// would show each particle's square.
+render_mode unshaded, blend_premul_alpha, depth_draw_never, cull_disabled, shadows_disabled, fog_disabled;
 
 uniform vec3 color_warm : source_color = vec3(0.75, 1.0, 0.2);
 uniform vec3 color_cool : source_color = vec3(0.2, 1.0, 0.55);
@@ -42,4 +46,5 @@ void fragment() {
 	float core = exp(-d * d * 20.0);
 	float halo = exp(-d * d * 4.0) * 0.3;
 	ALBEDO = tint * (core * 2.0 + halo) * (1.0 - smoothstep(0.8, 1.0, d));
+	ALPHA = 0.0;
 }
