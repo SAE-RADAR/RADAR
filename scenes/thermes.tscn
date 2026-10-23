@@ -22,6 +22,8 @@
 [ext_resource type="PackedScene" path="res://scenes/effects/fireflies.tscn" id="17_aeurs"]
 [ext_resource type="PackedScene" path="res://scenes/effects/steam/steam_clouds.tscn" id="18_steam"]
 [ext_resource type="Script" uid="uid://cwgv60m02vinv" path="res://scenes/effects/cascade.gd" id="20_iti14"]
+[ext_resource type="Script" path="res://scenes/world/ar/ar_session.gd" id="21_arsession"]
+[ext_resource type="Script" path="res://scenes/world/ar/qr_marker.gd" id="22_qrmarker"]
 
 [sub_resource type="Curve3D" id="Curve3D_icq5y"]
 _data = {
@@ -118,6 +120,18 @@ right_hand = NodePath("../../../XROrigin3D/RightController")
 script = ExtResource("2_ydk6e")
 metadata/_custom_type_script = "uid://ces1j6plojyra"
 
+[node name="ARSession" type="Node" parent="." node_paths=PackedStringArray("start_xr", "xr_origin", "camera", "hand_dissolve", "world_environment", "left_controller", "right_controller", "vr_only", "content")]
+script = ExtResource("21_arsession")
+start_xr = NodePath("../XRToolsStartXR")
+xr_origin = NodePath("../XROrigin3D")
+camera = NodePath("../XROrigin3D/XRCamera3D")
+hand_dissolve = NodePath("../HandDissolve")
+world_environment = NodePath("../WorldEnvironment")
+left_controller = NodePath("../XROrigin3D/LeftController")
+right_controller = NodePath("../XROrigin3D/RightController")
+vr_only = [NodePath("../XROrigin3D/LeftController/MovementTurn"), NodePath("../XROrigin3D/RightController/FunctionTeleport"), NodePath("../XROrigin3D/PlayerBody")]
+content = [NodePath("../Thermes vestiges"), NodePath("../InfoPoint_Bassin"), NodePath("../Fireflies"), NodePath("../Cascade")]
+
 [node name="WorldEnvironment" type="WorldEnvironment" parent="." unique_id=1155274397]
 environment = SubResource("Environment_ntjg7")
 
@@ -200,6 +214,11 @@ transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 2.9865043, 5.444454, 4.079879
 script = ExtResource("20_iti14")
 height = 4.25
 metadata/_custom_type_script = "uid://cwgv60m02vinv"
+
+[node name="QRMarker" type="Marker3D" parent="."]
+transform = Transform3D(0.82152855, 0, 0.57016736, 0, 1, 0, -0.57016736, 0, 0.82152855, -3.076, 3.062735, -12.79191)
+script = ExtResource("22_qrmarker")
+data = "RADAR:thermes"
 
 [connection signal="body_entered" from="SoundZone_Water" to="SoundZone_Water" method="_on_body_entered"]
 [connection signal="body_exited" from="SoundZone_Water" to="SoundZone_Water" method="_on_body_exited"]

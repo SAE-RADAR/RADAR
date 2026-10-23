@@ -1,12 +1,13 @@
 extends Node3D
 
 @export var skip_to := ""
+## With [member skip_to], runs that room in AR.
+@export var skip_to_ar := false
 
 
 func _ready() -> void:
-	if not Interactions.room_choice:
-		Rooms.go_to.call_deferred(Rooms.DEFAULT_ROOM, false)
-	elif skip_to:
+	if skip_to:
+		AppMode.mode = AppMode.Mode.AR if skip_to_ar else AppMode.Mode.VR
 		Rooms.go_to.call_deferred(skip_to, false)
 
 
@@ -16,6 +17,13 @@ func _unhandled_key_input(event: InputEvent) -> void:
 		return
 	match key.keycode:
 		KEY_1:
-			Rooms.go_to("thermes")
+			_go_to("thermes", AppMode.Mode.VR)
 		KEY_2:
-			Rooms.go_to("gros_pilier")
+			_go_to("gros_pilier", AppMode.Mode.VR)
+		KEY_3:
+			_go_to("thermes", AppMode.Mode.AR)
+
+
+func _go_to(room: String, mode: AppMode.Mode) -> void:
+	AppMode.mode = mode
+	Rooms.go_to(room)

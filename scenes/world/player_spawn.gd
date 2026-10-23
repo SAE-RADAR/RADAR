@@ -1,7 +1,8 @@
 extends Node
 
 ## Places the player on the scan's floor at the spawn point once tracking has
-## started, and puts them back there if they ever fall out of the world.
+## started, and puts them back there if they ever fall out of the world. Does
+## nothing in AR.
 ##
 ## Where the player physically stands, and the floor height the headset
 ## reports, vary between sessions (e.g. stationary boundary with a guessed
@@ -33,6 +34,10 @@ var _placed := false
 
 
 func _ready() -> void:
+	# In AR the player walks the real site and ARSession places the origin.
+	if AppMode.is_ar():
+		set_physics_process(false)
+		return
 	_spawn_transform = spawn.global_transform
 	# StartXR initializes before us; without a running interface (desktop),
 	# there is no tracking to wait for.
