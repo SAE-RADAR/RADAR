@@ -50,6 +50,11 @@ const STATUS_DURATION := 4.0
 ## the code's pose quicker, lower averages away its jitter.
 @export_range(0.1, 20.0, 0.1) var smoothing := 2.0
 
+## Without a running XR interface (desktop), no code will ever be seen: keep
+## the room where it is. Off to wait for codes anyway, like the simulated one
+## of the AR demo (ar_demo.tscn).
+@export var align_without_xr := true
+
 @export_group("Calibration")
 ## How fast the left stick moves the scan, in m/s.
 @export_range(0.01, 1.0, 0.01, "suffix:m/s") var move_speed := 0.1
@@ -103,9 +108,9 @@ func _ready() -> void:
 	var origin := xr_origin.global_transform
 	_yaw = origin.basis.get_euler().y
 	_position = origin.origin
-	# StartXR initializes before us; without a running interface (desktop),
-	# no code will ever be seen: keep the room where it is.
-	if not (start_xr.xr_interface and start_xr.xr_interface.is_initialized()):
+	# StartXR initializes before us.
+	var xr_running := start_xr.xr_interface and start_xr.xr_interface.is_initialized()
+	if align_without_xr and not xr_running:
 		_set_aligned()
 	else:
 		_show_status("Regardez le QR code pour caler la visite sur le site.")
@@ -131,7 +136,7 @@ func _physics_process(delta: float) -> void:
 			_position = _position.lerp(target.origin, weight)
 
 	if _calibrating:
-		_calibrate(delta)
+		calibrate(_stick(left_controller), _stick(right_controller), delta)
 	if _aligned:
 		# Every frame, so nothing else moves the origin away from the site.
 		xr_origin.global_transform = _offset().affine_inverse() * Transform3D(Basis(Vector3.UP, _yaw), _position)
@@ -217,9 +222,19 @@ func _set_aligned() -> void:
 	_show_status("Visite calée sur le site.\nY : corriger l'alignement.", STATUS_DURATION)
 
 
-func _calibrate(delta: float) -> void:
-	var move := _stick(left_controller)
-	var lift_turn := _stick(right_controller)
+## Whether a code has been seen and the room lined up with it.
+func is_aligned() -> bool:
+	return _aligned
+
+
+func is_calibrating() -> bool:
+	return _calibrating
+
+
+## Moves the scan while calibrating, as the sticks do: [param move] across
+## (x right, y forward, as the player looks), [param lift_turn] up (y) and
+## turning (x right), from -1 to 1.
+func calibrate(move: Vector2, lift_turn: Vector2, delta: float) -> void:
 	# Across, as the player sees it before the offset is applied.
 	var view := (_offset().basis * camera.global_basis)
 	var forward := Vector3(-view.z.x, 0.0, -view.z.z).normalized()
@@ -234,7 +249,8 @@ func _stick(controller: XRController3D) -> Vector2:
 	return value if value.length() > STICK_DEADZONE else Vector2.ZERO
 
 
-func _set_calibrating(calibrating: bool) -> void:
+## Starts calibrating, or ends it and saves the correction.
+func set_calibrating(calibrating: bool) -> void:
 	_calibrating = calibrating
 	hand_dissolve.mask_preview = scan_opacity if calibrating else 0.0
 	for marker in _markers:
@@ -248,13 +264,18 @@ func _set_calibrating(calibrating: bool) -> void:
 
 func _on_left_button_pressed(action: String) -> void:
 	if action == "by_button" and _aligned:
-		_set_calibrating(not _calibrating)
+		set_calibrating(not _calibrating)
 
 
 func _on_right_button_pressed(action: String) -> void:
 	if action == "by_button" and _calibrating:
-		_offset_yaw = 0.0
-		_offset_position = Vector3.ZERO
+		reset_calibration()
+
+
+## Drops the correction: the scan goes back to where the codes put it.
+func reset_calibration() -> void:
+	_offset_yaw = 0.0
+	_offset_position = Vector3.ZERO
 
 
 func _room_key() -> String:

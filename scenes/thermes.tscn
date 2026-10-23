@@ -216,7 +216,7 @@ height = 4.25
 metadata/_custom_type_script = "uid://cwgv60m02vinv"
 
 [node name="QRMarker" type="Marker3D" parent="."]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1.5, 0)
+transform = Transform3D(0.82152855, 0, 0.57016736, 0, 1, 0, -0.57016736, 0, 0.82152855, -3.076, 3.062735, -12.79191)
 script = ExtResource("22_qrmarker")
 data = "RADAR:thermes"
 
