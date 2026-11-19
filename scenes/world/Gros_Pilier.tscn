@@ -14,7 +14,7 @@
 [ext_resource type="Script" uid="uid://dki1ixhua0856" path="res://scenes/world/player_spawn.gd" id="12_spawn"]
 [ext_resource type="PackedScene" path="res://scenes/effects/fireflies.tscn" id="13_fireflies"]
 [ext_resource type="Script" uid="uid://c0s34emgvtxg2" path="res://scenes/ui/info_box.gd" id="14_infobox"]
-[ext_resource type="Resource" path="res://scenes/ui/gros_pilier_info.tres" id="15_info"]
+[ext_resource type="Resource" uid="uid://drkipp4yan4mn" path="res://scenes/ui/gros_pilier_info.tres" id="15_info"]
 
 [sub_resource type="ShaderMaterial" id="ShaderMaterial_aurora"]
 shader = ExtResource("10_aurora")
@@ -65,7 +65,7 @@ transform = Transform3D(-0.8, 0, 0.6, 0, 1, 0, -0.6, 0, -0.8, 1.5, 0.1, -2)
 [node name="XRCamera3D" type="XRCamera3D" parent="XROrigin3D" unique_id=1936629767]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1.7, 0)
 
-[node name="GazeRay" type="RayCast3D" parent="XROrigin3D/XRCamera3D"]
+[node name="GazeRay" type="RayCast3D" parent="XROrigin3D/XRCamera3D" unique_id=1910852831]
 target_position = Vector3(0, 0, -5)
 collision_mask = 2
 collide_with_areas = true
