@@ -21,6 +21,10 @@ const PointShader := preload("res://scenes/world/scan_point_cloud.gdshader")
 	set(value):
 		mesh = value
 		_cloud.mesh = value
+		# Breathing, dispersion and spiral move points around the cloud's
+		# center; the baked points keep the scan's coordinates.
+		_material.set_shader_parameter("cloud_center",
+				value.get_aabb().get_center() if value else Vector3.ZERO)
 
 ## Node holding the scanned meshes the cloud replaces; its parent if empty.
 @export var scan: Node3D
@@ -32,6 +36,48 @@ const PointShader := preload("res://scenes/world/scan_point_cloud.gdshader")
 	set(value):
 		point_size = value
 		_material.set_shader_parameter("point_size", value)
+
+@export_group("Animation")
+@export_range(0.0, 5.0, 0.1) var animation_speed := 1.0:
+	set(value):
+		animation_speed = value
+		_material.set_shader_parameter("speed", value)
+@export_range(0.0, 5.0, 0.1) var animation_strength := 1.0:
+	set(value):
+		animation_strength = value
+		_material.set_shader_parameter("strength", value)
+
+@export_subgroup("Effects")
+## Whole cloud swells and shrinks around its center.
+@export var breathing := false:
+	set(value):
+		breathing = value
+		_material.set_shader_parameter("breathing", value)
+## Vertical wave running along X.
+@export var wave := false:
+	set(value):
+		wave = value
+		_material.set_shader_parameter("wave", value)
+## Each point drifts in and out from the center on its own phase.
+@export var dispersion := false:
+	set(value):
+		dispersion = value
+		_material.set_shader_parameter("dispersion", value)
+## Points orbit around the vertical axis, farther ones wider.
+@export var spiral := false:
+	set(value):
+		spiral = value
+		_material.set_shader_parameter("spiral", value)
+## A few points at a time jump sideways.
+@export var glitch := false:
+	set(value):
+		glitch = value
+		_material.set_shader_parameter("glitch", value)
+## Points jitter and bands of them disappear, sweeping along X.
+@export var erosion := false:
+	set(value):
+		erosion = value
+		_material.set_shader_parameter("erosion", value)
 
 var _cloud := MeshInstance3D.new()
 var _material := ShaderMaterial.new()
