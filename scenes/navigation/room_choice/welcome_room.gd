@@ -22,6 +22,8 @@ func _unhandled_key_input(event: InputEvent) -> void:
 			_go_to("gros_pilier", AppMode.Mode.VR)
 		KEY_3:
 			_go_to("thermes", AppMode.Mode.AR)
+		KEY_4:
+			_go_to("demo_qr", AppMode.Mode.AR)
 
 
 func _go_to(room: String, mode: AppMode.Mode) -> void:

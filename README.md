@@ -9,7 +9,7 @@ Au lancement, le joueur arrive dans une salle d'accueil (`scenes/navigation/room
 - **Changer de salle depuis le code** : `Rooms.go_to("thermes")` ou `Rooms.go_to("gros_pilier")`, après avoir réglé `AppMode.mode`. Le changement de scène se fait avec un fondu au noir.
 - **Ajouter une salle** : l'ajouter dans `Rooms.SCENES` (`rooms.gd`) et dans `ROOMS` (`room_menu.gd`), avec le nom du bouton et l'image de preview (dans `previews/`, en 640×360). Pour l'AR, l'ajouter aussi dans `Rooms.AR_ROOMS` (voir plus bas).
 - **Point d'apparition** : c'est le `XROrigin3D` de chaque scène de salle (position et orientation), placé par `player_spawn.gd` (en VR seulement).
-- **Tests** : la propriété `skip_to` de la salle d'accueil permet de sauter le choix (`skip_to_ar` pour y aller en AR). Sur PC, les touches 1 et 2 envoient dans chaque salle en VR, la touche 3 dans les thermes en AR.
+- **Tests** : la propriété `skip_to` de la salle d'accueil permet de sauter le choix (`skip_to_ar` pour y aller en AR). Sur PC, les touches 1 et 2 envoient dans chaque salle en VR, la touche 3 dans les thermes en AR, la touche 4 dans la démo QR code en AR.
 - L'écran est un `XRToolsViewport2DIn3D` qui affiche la scène 2D `room_menu.tscn`. Chaque main porte un `XRToolsFunctionPointer`.
 
 
@@ -33,6 +33,11 @@ En AR, le casque montre les vraies thermes en passthrough. Un QR code collé sur
   - G : coller le code de travers (15 cm, 4°) ; C : calibrer (flèches, Page préc./suiv., Début/Fin, Retour arrière pour réinitialiser) ;
   - H : masquer l'aide, R : recommencer.
   - Au départ on est à 4,5 m du code : il est vu mais trop loin, il faut s'approcher à moins de 3 m pour que la visite se cale. La calibration de la démo est enregistrée à part de celle des thermes.
+- **Démo QR code au casque, hors des thermes** : `scenes/world/ar/ar_qr_demo.tscn`, salle « Démo QR code » proposée en AR seulement (`Rooms.AR_ONLY`). Pour tester le suivi des QR codes n'importe où.
+  - Coller **n'importe quel QR code** sur un mur plat, vers 1,5 m de haut, avec environ 1 m de libre en dessous (`data` du `QRMarker` est vide : tous les codes sont acceptés). Idéalement 20 cm de côté (`size`), imprimé avec sa marge blanche.
+  - Choisir « Réalité augmentée » puis « Démo QR code », et regarder le code à moins de 3 m. Un cadre cyan s'affiche autour du code (pour juger du calage par rapport au papier), avec un texte au-dessus.
+  - En dessous du code, un cadre de 1,6 × 0,8 m marque un « mur » virtuel 20 cm devant le vrai (on ne peut pas passer la main dans un vrai mur) : y passer la main creuse un trou (`HandDissolve`) qui montre deux tuyaux, un chaud et un froid avec des coudes.
+  - La calibration (**Y**) marche comme dans les thermes, enregistrée à part.
 - **Ajouter l'AR à une salle** : y ajouter un `ARSession` (copier celui des thermes et ses chemins de nœuds) et au moins un `QRMarker`, puis ajouter la salle dans `Rooms.AR_ROOMS`.
 - **Casque** : suivi des QR codes par l'extension OpenXR `XR_EXT_spatial_marker_tracking` (paramètres de projet `openxr/extensions/spatial_entity/enable_marker_tracking` et `enable_builtin_marker_tracking`). Sur Quest 3, d'après les retours de la communauté, il faut Horizon OS v83 ou plus récent. Imprimer le code avec sa marge blanche, le coller bien à plat, et éviter les reflets.
 
