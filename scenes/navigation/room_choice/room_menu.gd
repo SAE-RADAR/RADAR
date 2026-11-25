@@ -9,6 +9,9 @@ const ROOMS := {
 		"name": "Salle du gros pilier",
 		"preview": preload("res://scenes/navigation/room_choice/previews/gros_pilier.jpg"),
 	},
+	"demo_qr": {
+		"name": "Démo QR code\n\nN'importe où : collez un QR code sur un mur et regardez-le.",
+	},
 }
 
 const MODE_FONT_SIZE := 34
@@ -27,7 +30,7 @@ func _show_modes() -> void:
 	_add_mode(AppMode.Mode.VR, "Réalité virtuelle",
 			"Visiter les scans 3D, où que vous soyez.")
 	_add_mode(AppMode.Mode.AR, "Réalité augmentée",
-			"Sur le site : le scan se cale sur les vraies thermes grâce au QR code.")
+			"Sur le site : le scan se cale sur les vraies thermes grâce au QR code. Ailleurs : démo avec n'importe quel QR code.")
 
 
 func _add_mode(mode: AppMode.Mode, title: String, description: String) -> void:
@@ -45,6 +48,8 @@ func _on_mode_chosen(mode: AppMode.Mode) -> void:
 	var rooms: Array = ROOMS.keys()
 	if AppMode.is_ar():
 		rooms = rooms.filter(func(room: String) -> bool: return room in Rooms.AR_ROOMS)
+	else:
+		rooms = rooms.filter(func(room: String) -> bool: return room not in Rooms.AR_ONLY)
 	if not Interactions.room_choice:
 		Rooms.go_to(Rooms.DEFAULT_ROOM if Rooms.DEFAULT_ROOM in rooms else rooms[0])
 	elif rooms.size() == 1:
@@ -59,7 +64,9 @@ func _show_rooms(rooms: Array) -> void:
 	for room: String in rooms:
 		var button := Button.new()
 		button.text = ROOMS[room].name
-		button.icon = ROOMS[room].preview
+		# Rooms without a preview, like the QR code demo, are text only.
+		button.icon = ROOMS[room].get("preview")
+		button.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
 		button.expand_icon = true
 		button.icon_alignment = HORIZONTAL_ALIGNMENT_CENTER
 		button.vertical_icon_alignment = VERTICAL_ALIGNMENT_TOP

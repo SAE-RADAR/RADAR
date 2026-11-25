@@ -6,12 +6,16 @@ const SCENES := {
 	"welcome": "res://scenes/navigation/room_choice/welcome_room.tscn",
 	"thermes": "res://scenes/thermes.tscn",
 	"gros_pilier": "res://scenes/world/Gros_Pilier.tscn",
+	"demo_qr": "res://scenes/world/ar/ar_qr_demo.tscn",
 }
 
 const DEFAULT_ROOM := "thermes"
 ## Rooms that can run in AR: their scene has an ARSession and QR markers placed
 ## where the codes are stuck on the real site.
-const AR_ROOMS: Array[String] = ["thermes"]
+const AR_ROOMS: Array[String] = ["thermes", "demo_qr"]
+## Rooms with nothing to see in VR, only offered in AR: the QR code demo,
+## which lines up on any QR code stuck on any wall.
+const AR_ONLY: Array[String] = ["demo_qr"]
 const FADE_DURATION := 0.3
 const PLACEMENT_FRAMES := 4
 

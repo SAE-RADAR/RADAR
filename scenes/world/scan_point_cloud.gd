@@ -21,10 +21,7 @@ const PointShader := preload("res://scenes/world/scan_point_cloud.gdshader")
 	set(value):
 		mesh = value
 		_cloud.mesh = value
-		# Breathing, dispersion and spiral move points around the cloud's
-		# center; the baked points keep the scan's coordinates.
-		_material.set_shader_parameter("cloud_center",
-				value.get_aabb().get_center() if value else Vector3.ZERO)
+		_update_center()
 
 ## Node holding the scanned meshes the cloud replaces; its parent if empty.
 @export var scan: Node3D
@@ -46,6 +43,18 @@ const PointShader := preload("res://scenes/world/scan_point_cloud.gdshader")
 	set(value):
 		animation_strength = value
 		_material.set_shader_parameter("strength", value)
+## Use [member center] instead of the middle of the mesh's bounding box, which
+## a few stray points far from the scan can drag meters away.
+@export var custom_center := false:
+	set(value):
+		custom_center = value
+		_update_center()
+## What breathing, dispersion and spiral move points around, in the cloud's
+## own space (the baked points keep the scan's coordinates).
+@export var center := Vector3.ZERO:
+	set(value):
+		center = value
+		_update_center()
 
 @export_subgroup("Effects")
 ## Whole cloud swells and shrinks around its center.
@@ -112,6 +121,13 @@ func _process(_delta: float) -> void:
 	var show_cloud := not (hand_dissolve and hand_dissolve.mask_mode)
 	if show_cloud != _showing_cloud:
 		_show_cloud(show_cloud)
+
+
+func _update_center() -> void:
+	var value := center
+	if not custom_center:
+		value = mesh.get_aabb().get_center() if mesh else Vector3.ZERO
+	_material.set_shader_parameter("cloud_center", value)
 
 
 func _show_cloud(show_cloud: bool) -> void:

@@ -136,6 +136,8 @@ transform = Transform3D(0.47715876, 0, -0.87881711, 0, 1, 0, 0.87881711, 0, 0.47
 script = ExtResource("25_i1yws")
 mesh = ExtResource("26_cloud")
 hand_dissolve = NodePath("../../HandDissolve")
+custom_center = true
+center = Vector3(12.359, -3.746, -10.81)
 wave = true
 
 [node name="XRToolsStartXR" type="Node" parent="." unique_id=1586718985]

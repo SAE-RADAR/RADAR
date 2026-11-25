@@ -1,0 +1,195 @@
+[gd_scene format=3]
+
+[ext_resource type="Script" uid="uid://ces1j6plojyra" path="res://addons/godot-xr-tools/xr/start_xr.gd" id="1_startxr"]
+[ext_resource type="Script" uid="uid://ji143dy71qyl" path="res://scenes/world/ar/ar_session.gd" id="2_arsession"]
+[ext_resource type="Script" uid="uid://dbtsd0l8e0o2w" path="res://scenes/world/ar/qr_marker.gd" id="3_qrmarker"]
+[ext_resource type="Script" uid="uid://mefmk615ficv" path="res://scenes/world/hand_dissolve.gd" id="4_dissolve"]
+[ext_resource type="Script" uid="uid://cmnjmml11k5sj" path="res://scenes/world/scan_collision.gd" id="5_collision"]
+[ext_resource type="Script" uid="uid://c7gf0s7t7g5xs" path="res://scenes/effects/pipe.gd" id="6_pipe"]
+[ext_resource type="PackedScene" uid="uid://b4kad2kuba1yn" path="res://addons/godot-xr-tools/hands/scenes/lowpoly/left_hand_low.tscn" id="7_lefthand"]
+[ext_resource type="PackedScene" uid="uid://l2n30mpbkdyw" path="res://addons/godot-xr-tools/hands/scenes/lowpoly/right_hand_low.tscn" id="8_righthand"]
+
+[sub_resource type="Environment" id="Environment_demo"]
+background_mode = 1
+background_color = Color(0.1, 0.11, 0.13, 1)
+ambient_light_source = 2
+ambient_light_color = Color(1, 1, 1, 1)
+reflected_light_source = 1
+
+[sub_resource type="BoxMesh" id="BoxMesh_panel"]
+size = Vector3(1.6, 0.8, 0.04)
+
+[sub_resource type="Curve3D" id="Curve3D_hot"]
+_data = {
+"points": PackedVector3Array(0, 0, 0, 0, 0, 0, -0.75, -0.35, 0, 0, 0, 0, 0, 0, 0, 0.75, -0.35, 0),
+"tilts": PackedFloat32Array(0, 0)
+}
+point_count = 2
+
+[sub_resource type="Curve3D" id="Curve3D_cold"]
+_data = {
+"points": PackedVector3Array(0, 0, 0, 0, 0, 0, -0.75, -0.85, 0, 0, 0, 0, 0, 0, 0, 0.25, -0.85, 0, 0, 0, 0, 0, 0, 0, 0.25, -0.55, 0, 0, 0, 0, 0, 0, 0, 0.75, -0.55, 0),
+"tilts": PackedFloat32Array(0, 0, 0, 0)
+}
+point_count = 4
+
+[sub_resource type="StandardMaterial3D" id="Material_frame"]
+transparency = 1
+shading_mode = 0
+albedo_color = Color(0.3, 0.95, 1, 0.9)
+
+[sub_resource type="StandardMaterial3D" id="Material_outline"]
+transparency = 1
+shading_mode = 0
+albedo_color = Color(0.3, 0.95, 1, 0.45)
+
+[sub_resource type="BoxMesh" id="BoxMesh_code_h"]
+material = SubResource("Material_frame")
+size = Vector3(0.224, 0.012, 0.004)
+
+[sub_resource type="BoxMesh" id="BoxMesh_code_v"]
+material = SubResource("Material_frame")
+size = Vector3(0.012, 0.2, 0.004)
+
+[sub_resource type="BoxMesh" id="BoxMesh_outline_h"]
+material = SubResource("Material_outline")
+size = Vector3(1.62, 0.01, 0.004)
+
+[sub_resource type="BoxMesh" id="BoxMesh_outline_v"]
+material = SubResource("Material_outline")
+size = Vector3(0.01, 0.8, 0.004)
+
+[node name="ARQRDemo" type="Node3D"]
+
+[node name="XRToolsStartXR" type="Node" parent="."]
+script = ExtResource("1_startxr")
+metadata/_custom_type_script = "uid://ces1j6plojyra"
+
+[node name="ARSession" type="Node" parent="." node_paths=PackedStringArray("start_xr", "xr_origin", "camera", "hand_dissolve", "world_environment", "left_controller", "right_controller", "content")]
+script = ExtResource("2_arsession")
+start_xr = NodePath("../XRToolsStartXR")
+xr_origin = NodePath("../XROrigin3D")
+camera = NodePath("../XROrigin3D/XRCamera3D")
+hand_dissolve = NodePath("../HandDissolve")
+world_environment = NodePath("../WorldEnvironment")
+left_controller = NodePath("../XROrigin3D/LeftController")
+right_controller = NodePath("../XROrigin3D/RightController")
+content = [NodePath("../Demo")]
+
+[node name="WorldEnvironment" type="WorldEnvironment" parent="."]
+environment = SubResource("Environment_demo")
+
+[node name="XROrigin3D" type="XROrigin3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 1.5)
+
+[node name="XRCamera3D" type="XRCamera3D" parent="XROrigin3D"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1.6, 0)
+
+[node name="LeftController" type="XRController3D" parent="XROrigin3D"]
+tracker = &"left_hand"
+pose = &"aim"
+
+[node name="LeftHand" parent="XROrigin3D/LeftController" instance=ExtResource("7_lefthand")]
+
+[node name="RightController" type="XRController3D" parent="XROrigin3D"]
+tracker = &"right_hand"
+pose = &"aim"
+
+[node name="RightHand" parent="XROrigin3D/RightController" instance=ExtResource("8_righthand")]
+
+[node name="HandDissolve" type="Node" parent="." node_paths=PackedStringArray("scan", "camera", "left_hand", "right_hand")]
+script = ExtResource("4_dissolve")
+scan = NodePath("../Demo/DigPanel")
+camera = NodePath("../XROrigin3D/XRCamera3D")
+left_hand = NodePath("../XROrigin3D/LeftController")
+right_hand = NodePath("../XROrigin3D/RightController")
+spread_speed = 0.5
+max_radius = 0.5
+
+[node name="QRMarker" type="Marker3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1.5, 0)
+script = ExtResource("3_qrmarker")
+
+[node name="Demo" type="Node3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1.5, 0)
+
+[node name="Title" type="Label3D" parent="Demo"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.19, 0.01)
+pixel_size = 0.0008
+text = "Démo AR RADAR : QR code détecté
+Passez la main dans le cadre en dessous du code"
+font_size = 40
+outline_size = 10
+
+[node name="CodeFrame" type="Node3D" parent="Demo"]
+
+[node name="Top" type="MeshInstance3D" parent="Demo/CodeFrame"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.106, 0.004)
+cast_shadow = 0
+mesh = SubResource("BoxMesh_code_h")
+
+[node name="Bottom" type="MeshInstance3D" parent="Demo/CodeFrame"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, -0.106, 0.004)
+cast_shadow = 0
+mesh = SubResource("BoxMesh_code_h")
+
+[node name="Left" type="MeshInstance3D" parent="Demo/CodeFrame"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -0.106, 0, 0.004)
+cast_shadow = 0
+mesh = SubResource("BoxMesh_code_v")
+
+[node name="Right" type="MeshInstance3D" parent="Demo/CodeFrame"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.106, 0, 0.004)
+cast_shadow = 0
+mesh = SubResource("BoxMesh_code_v")
+
+[node name="DigPanel" type="Node3D" parent="Demo"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, -0.6, 0.2)
+script = ExtResource("5_collision")
+
+[node name="Mesh" type="MeshInstance3D" parent="Demo/DigPanel"]
+cast_shadow = 0
+mesh = SubResource("BoxMesh_panel")
+
+[node name="PanelOutline" type="Node3D" parent="Demo"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, -0.6, 0.224)
+
+[node name="Top" type="MeshInstance3D" parent="Demo/PanelOutline"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.405, 0)
+cast_shadow = 0
+mesh = SubResource("BoxMesh_outline_h")
+
+[node name="Bottom" type="MeshInstance3D" parent="Demo/PanelOutline"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, -0.405, 0)
+cast_shadow = 0
+mesh = SubResource("BoxMesh_outline_h")
+
+[node name="Left" type="MeshInstance3D" parent="Demo/PanelOutline"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -0.805, 0, 0)
+cast_shadow = 0
+mesh = SubResource("BoxMesh_outline_v")
+
+[node name="Right" type="MeshInstance3D" parent="Demo/PanelOutline"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.805, 0, 0)
+cast_shadow = 0
+mesh = SubResource("BoxMesh_outline_v")
+
+[node name="HotPipe" type="Path3D" parent="Demo"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 0.1)
+curve = SubResource("Curve3D_hot")
+script = ExtResource("6_pipe")
+radius = 0.035
+inlet_temperature = 45.0
+outlet_temperature = 40.0
+metadata/_custom_type_script = "uid://c7gf0s7t7g5xs"
+
+[node name="ColdPipe" type="Path3D" parent="Demo"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 0.1)
+curve = SubResource("Curve3D_cold")
+script = ExtResource("6_pipe")
+radius = 0.035
+bend_radius = 0.1
+inlet_temperature = 10.0
+outlet_temperature = 14.0
+flow_speed = 0.25
+metadata/_custom_type_script = "uid://c7gf0s7t7g5xs"
