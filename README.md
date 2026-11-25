@@ -59,3 +59,10 @@ Les tuyaux (`Pipe`, `scenes/effects/pipe.gd`) montrent comment l'eau circule dan
 - **Échelle des couleurs** : commune à tous les tuyaux, dans `pipe_water_material.tres` (quatre couleurs et `stop_temperatures`, de 10 °C en bleu à 45 °C en rouge par défaut). Taille et espacement des flèches au même endroit.
 - **Visibilité** : `HandDissolve` publie ses trous dans les globales de shader `DISSOLVE_SOURCE_0/1` (`project.godot`). Les tuyaux sont toujours visibles dans l'éditeur ; `always_visible` les montre aussi en jeu, pour déboguer (les murs les cachent quand même).
 - **Démo** : `scenes/effects/pipe_demo.tscn`, sur PC, avec 7 postes (touches 1 à 7) : tuyaux cachés dans les murs (maintenir le clic droit sur le mur pour creuser), échelle des températures, vitesses, refroidissement le long d'un tuyau, coudes et courbes, vanne changée en jeu (`pipe_demo_valve.gd`), et un petit circuit foyer → caldarium → tepidarium, aqueduc → frigidarium.
+
+## Nuage de points
+
+Le scan des thermes est dessiné en nuage de points (`ScanPointCloud`, `scenes/world/scan_point_cloud.gd`), cuit une fois en mesh par `tools/bake_point_cloud.gd`. Six animations s'activent sur le nœud : respiration, onde, dispersion, spirale, glitch, érosion, avec une vitesse et une intensité communes. Les mains dissolvent le nuage comme le maillage (`HandDissolve`).
+
+- **Centre des animations** : la respiration, la dispersion et la spirale bougent les points autour du centre de la boîte englobante du mesh, que quelques points égarés tirent loin des thermes. Cocher `custom_center` et régler `center` (dans l'espace du nuage) pour les centrer sur le site.
+- **Démo** : `scenes/world/point_cloud_demo.tscn`, sur PC : panneau pour activer chaque effet et régler vitesse, intensité et taille des points (touches R O D S G E, 0 pour tout couper), visite auto qui les enchaîne (Espace), M pour comparer avec le maillage, clic droit maintenu pour dissoudre, 1 à 4 pour les vues.

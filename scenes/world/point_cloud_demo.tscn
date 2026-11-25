@@ -1,0 +1,82 @@
+[gd_scene format=3 uid="uid://ecfdnhqi77te"]
+
+[ext_resource type="PackedScene" uid="uid://dqvpqa7g11b1v" path="res://assets/thermes/models/Thermes vestiges.fbx" id="1_scan"]
+[ext_resource type="Script" uid="uid://cmnjmml11k5sj" path="res://scenes/world/scan_collision.gd" id="2_scan_collision"]
+[ext_resource type="Script" uid="uid://cbbps7rs0k2vu" path="res://scenes/world/scan_point_cloud.gd" id="3_point_cloud"]
+[ext_resource type="ArrayMesh" path="res://assets/thermes/models/thermes_point_cloud.mesh" id="4_cloud_mesh"]
+[ext_resource type="Script" uid="uid://c2a44l6ws43xu" path="res://scenes/effects/cascade_demo_camera.gd" id="5_camera"]
+[ext_resource type="Script" uid="uid://3tastrh4g2y6" path="res://scenes/effects/pipe_demo_hand.gd" id="6_hand"]
+[ext_resource type="Script" uid="uid://mefmk615ficv" path="res://scenes/world/hand_dissolve.gd" id="7_dissolve"]
+[ext_resource type="Script" uid="uid://cyif4ykm5flej" path="res://scenes/world/point_cloud_demo.gd" id="8_demo"]
+
+[sub_resource type="Environment" id="Environment_night"]
+background_mode = 1
+background_color = Color(0.02, 0.025, 0.04, 1)
+ambient_light_source = 2
+ambient_light_color = Color(1, 1, 1, 1)
+tonemap_mode = 2
+glow_enabled = true
+glow_intensity = 1.2
+glow_bloom = 0.05
+
+[node name="PointCloudDemo" type="Node3D" unique_id=820729617]
+
+[node name="WorldEnvironment" type="WorldEnvironment" parent="." unique_id=1697665084]
+environment = SubResource("Environment_night")
+
+[node name="Thermes vestiges" parent="." unique_id=1062936535 instance=ExtResource("1_scan")]
+script = ExtResource("2_scan_collision")
+
+[node name="PointCloud" type="Node3D" parent="Thermes vestiges" unique_id=1774098933 node_paths=PackedStringArray("hand_dissolve")]
+transform = Transform3D(0.47715876, 0, -0.8788171, 0, 1, 0, 0.8788171, 0, 0.47715876, -15.864, 5.029, -4.6261)
+script = ExtResource("3_point_cloud")
+mesh = ExtResource("4_cloud_mesh")
+hand_dissolve = NodePath("../../HandDissolve")
+custom_center = true
+center = Vector3(12.359, -3.746, -10.81)
+
+[node name="Overview" type="Marker3D" parent="." unique_id=188401834]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1.3, 1)
+
+[node name="Basin" type="Marker3D" parent="." unique_id=703474699]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 2.9, 1.1, 1.9)
+
+[node name="NorthEnd" type="Marker3D" parent="." unique_id=1090525567]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1.5, -11)
+
+[node name="SouthEnd" type="Marker3D" parent="." unique_id=5571011]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1.5, 11)
+
+[node name="Camera" type="Camera3D" parent="." unique_id=432723556 node_paths=PackedStringArray("focus_points")]
+far = 500.0
+script = ExtResource("5_camera")
+focus_points = [NodePath("../Overview"), NodePath("../Basin"), NodePath("../NorthEnd"), NodePath("../SouthEnd")]
+distance = 26.0
+max_distance = 80.0
+
+[node name="MouseHand" type="Node3D" parent="." unique_id=375695046 node_paths=PackedStringArray("camera")]
+script = ExtResource("6_hand")
+camera = NodePath("../Camera")
+
+[node name="HandDissolve" type="Node" parent="." unique_id=1773515522 node_paths=PackedStringArray("scan", "camera", "left_hand")]
+script = ExtResource("7_dissolve")
+scan = NodePath("../Thermes vestiges")
+camera = NodePath("../Camera")
+left_hand = NodePath("../MouseHand")
+spread_speed = 1.5
+max_radius = 3.0
+
+[node name="Panel" type="CanvasLayer" parent="." unique_id=402819378 node_paths=PackedStringArray("cloud")]
+script = ExtResource("8_demo")
+cloud = NodePath("../Thermes vestiges/PointCloud")
+
+[node name="Help" type="CanvasLayer" parent="." unique_id=1833093442]
+
+[node name="Label" type="Label" parent="Help" unique_id=837683400]
+offset_left = 16.0
+offset_top = 16.0
+theme_override_colors/font_outline_color = Color(0, 0, 0, 1)
+theme_override_constants/outline_size = 6
+text = "Clic gauche + glisser : tourner · Molette : zoom · 1 à 4 : vues
+Clic droit maintenu sur le site : dissoudre le nuage
+R O D S G E : effets · Espace : visite auto · M : nuage / maillage · 0 : tout couper"
